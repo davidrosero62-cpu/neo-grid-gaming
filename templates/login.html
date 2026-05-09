@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <title>Login - Neo Grid Gaming</title>
+    <link rel="icon" href="../static/img/icon.png?v=1" type="image/x-icon" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+  </head>
+
+  <body>
+    <header>
+      <nav class="navbar">
+        <div class="logo">
+            <a href="{{ url_for('index') }}" class="logo-link">
+            <img src="{{ url_for('static', filename='img/logo.svg') }}" alt="Neo Grid Gaming" class="img-logo" />
+          </a>
+        </div>
+      </nav>
+    </header>
+    <main>
+      <div class="contenedor-login">
+        {% with messages = get_flashed_messages(with_categories=true) %} {% if
+        messages %} {%for category,message in messages %}
+        <div class="alerta alerta={{category}}">{{message}}</div>
+        {% endfor %} {% endif %} {%endwith %}
+
+        <h1>Iniciar Sesión</h1>
+        <form action="/login" method="POST" class="formulario">
+          <div class="grupo-input">
+            <label>Correo Electronico</label>
+            <input
+              type="email"
+              name="email"
+              placeholder="tu@correo.com"
+              required
+            />
+          </div>
+          <div class="grupo-input">
+            <label>Contraseña</label>
+            <input
+              type="password"
+              name="password"
+              placeholder="••••••••"
+              required
+            />
+          </div>
+          <button type="submit" class="btn-submit">Ingresar</button>
+        </form>
+        <p class="link-registro">
+          ¿No tienes cuenta?
+          <a href="{{url_for('register')}}">Registrate aquí</a>
+        </p>
+      </div>
+    </main>
+  </body>
+</html>
