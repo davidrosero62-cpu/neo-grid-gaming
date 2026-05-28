@@ -44,13 +44,13 @@ def register():
             connexion = obtener_conexion()
             cursor = connexion.cursor()
             # Verificar si el correo ya existe
-            cursor.execute("SELECT idusuario FROM usuario WHERE correo = %s", (correo))
+            cursor.execute("SELECT idusuario FROM usuario WHERE correo = %s", [correo])
             if cursor.fetchone():
                 flash("El corrreo ya esta registrado", "error")
                 return redirect(url_for("register"))
             # insertar nuevo usuario
             cursor.execute(
-                "INSERT INTO usurario (nombres, correo, password, rol) VALUES (%s, %s, %s, %s)",
+                "INSERT INTO usuario (nombres, correo, password, rol) VALUES (%s, %s, %s, %s)",
                 (nombres, correo, password, "cliente"),
             )
             connexion.commit()

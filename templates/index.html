@@ -43,7 +43,16 @@
           <a href="#"><i class="fas fa-shopping-cart"></i></a>
           <span id="cart-count">0</span>
           <div class="login">
+            
+            
             <a href="{{ url_for('login')}}"><i class="fas fa-user"></i></a>
+            
+
+            {% if session.get('rol') == 'admin' %}
+              <a href="{{ url_for('admin') }}" class="btn-panel-nav" title="Panel de Administración">
+                <i class="fas fa-user-shield"></i>Admin
+              </a>
+              {% endif %}
           </div>
         </div>
       </nav>
