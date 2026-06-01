@@ -12,7 +12,6 @@ app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
 
 def obtener_conexion():
-    return mysql.connector.connect(
         host=os.getenv("DB_HOST"),
         user=os.getenv("DB_USER"),
         password=os.getenv("DB_PASSWORD"),
@@ -196,11 +195,13 @@ def admin():
 
                 cursor.execute(
                     """
-                    INSERT INTO producto (nombre, precio, stock, categori_id_categoria, descripcion, imagen ) VALUES (%s, %s, %s, %s, %s, %s)
+                    INSERT INTO producto (nombre, precio, stock, categoria_id_categoria, descripcion, imagen ) VALUES (%s, %s, %s, %s, %s, %s)
                 """,
                     (nombre, precio, stock, categoria, descripcion, imagen),
                 )
                 conexion.commit()
+                cursor.close()
+                conexion.close()
                 flash("producto agregado correctamente", "exito")
                 return redirect(url_for("admin"))
         # Obtener categorias para el formulario
@@ -214,6 +215,25 @@ def admin():
 
     except mysql.connector.Error as err:
         return f"Error al conectar a la base de datos: {err}"
+    
+@app.route("/eliminar_producto/<int:id>")
+def eliminar_producto(id):
+    if session.get("rol") != "admin":
+        flash("Acceso denegado.", "error")
+        return redirect(url_for("index"))
+    try:
+        conexion = obtener_conexion()
+        cursor = conexion.cursor()
+        cursor.execute("DELETE FROM producto WHERE id_producto = %s", (id,))
+        conexion.commit()
+        cursor.close()
+        conexion.close()
+
+        flash("Producto eliminado correctamente", "exito")
+        return redirect (url_for("admin"))
+    except mysql.connector.Error as err:
+        return f"Error al eliminar producto: {err}"
+
 
 
 if __name__ == "__main__":

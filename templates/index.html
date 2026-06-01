@@ -69,6 +69,33 @@
           <a href="#" class="boton-catalogo">ver Catálogo</a>
         </div>
       </section>
+      <section id="catalogo" class="contenedor-productos">
+        <h2 class="titulo-seccion">Nuestros Productos</h2>
+        
+        <div class="grid-productos">
+          {% for producto in productos %}
+            <div class="tarjeta-producto">
+              <div class="imagen-producto">
+                <img src="{{ url_for('static', filename='img/productos/' + producto.imagen) }}" alt="{{ producto.nombre }}">
+              </div>
+              <div class="info-producto">
+                <h3>{{ producto.nombre }}</h3>
+                <p class="descripcion-corta">{{ producto.descripcion }}</p>
+                <p class="precio">${{ "{:,.0f}".format(producto.precio) }}</p>
+                
+                <form action="{{ url_for('agregar_al_carrito') }}" method="POST">
+                  <input type="hidden" name="id_producto" value="{{ producto.id_producto }}">
+                  <button type="submit" class="btn-agregar-carrito">
+                    <i class="fas fa-shopping-cart"></i> Agregar al Carrito
+                  </button>
+                </form>
+              </div>
+            </div>
+          {% else %}
+            <p class="no-productos">No hay productos disponibles en este momento.</p>
+          {% endfor %}
+        </div>
+      </section>
     </main>
   </body>
 </html>
