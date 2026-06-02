@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <title>Modificar Producto</title>
+    <link rel="icon" href="../static/img/icon.png?v=1" type="image/x-icon" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+  </head>
+<body>
+     <header>
+      <nav class="navbar">
+        <div class="logo">
+          <a href="{{ url_for('index') }}" class="logo-link">
+            <img src="{{ url_for('static', filename='img/logo.svg') }}" alt="Neo Grid Gaming" class="img-logo" />
+          </a>
+        </div>
+      </nav>
+    </header>
+
+    <main class="contenedor-formulario">
+        <h2>Editar Producto: {{ producto.nombre }}</h2>
+        
+        <form method="POST" class="formulario">
+            <div class="grupo-input">
+                <label>Nombre</label>
+                <input type="text" name="nombre" value="{{ producto.nombre }}" required>
+            </div>
+            
+            <div class="grupo-input">
+                <label>Precio</label>
+                <input type="number" name="precio" value="{{ producto.precio }}" step="0.01" required>
+            </div>
+
+            <div class="grupo-input">
+                <label>Stock</label>
+                <input type="number" name="stock" value="{{ producto.stock }}" required>
+            </div>
+
+            <button type="submit" class="btn-submit">Guardar Cambios</button>
+        </form>
+    </main>
+</body>
+</html>

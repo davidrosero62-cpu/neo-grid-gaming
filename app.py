@@ -12,11 +12,15 @@ app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
 
 def obtener_conexion():
+    # Asegúrate de que TODAS estas líneas tengan los mismos espacios (4 espacios)
+    conn = mysql.connector.connect(
         host=os.getenv("DB_HOST"),
         user=os.getenv("DB_USER"),
         password=os.getenv("DB_PASSWORD"),
         database=os.getenv("DB_NAME"),
+        port=os.getenv("DB_PORT", 3306)
     )
+    return conn # Esta línea debe estar al mismo nivel que 'conn ='
 
 
 @app.route("/")
@@ -233,7 +237,34 @@ def eliminar_producto(id):
         return redirect (url_for("admin"))
     except mysql.connector.Error as err:
         return f"Error al eliminar producto: {err}"
-
+    
+@app.route("/modificar_producto/<int:id>", methods=["GET", "POST"])
+def modificar_producto(id):
+    if session.get("rol") != "admin":
+        return redirect(url_for("index"))
+    
+    conexion = obtener_conexion()
+    cursor = conexion.cursor(dictionary=True)
+    
+    if request.method == "POST":
+        nombre = request.form["nombre"]
+        precio = request.form["precio"]
+        stock = request.form["stock"]
+        
+        cursor.execute("UPDATE producto SET nombre=%s, precio=%s, stock=%s WHERE id_producto=%s", 
+                       (nombre, precio, stock, id))
+        conexion.commit()
+        cursor.close()
+        conexion.close()
+        flash("Producto actualizado correctamente", "exito")
+        return redirect(url_for("admin"))
+    
+    cursor.execute("SELECT * FROM producto WHERE id_producto = %s", (id,))
+    producto = cursor.fetchone()
+    cursor.close()
+    conexion.close()
+    
+    return render_template("editar.html", producto=producto)
 
 
 if __name__ == "__main__":

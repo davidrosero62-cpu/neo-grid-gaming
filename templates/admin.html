@@ -131,6 +131,11 @@
                   class="btn-eliminar"
                   >Eliminar</a
                 >
+                <a
+                  href="{{ url_for('modificar_producto', id=producto.id_producto) }}"
+                  class="btn-eliminar"
+                  >Modificar</a
+                >
               </td>
             </tr>
             {% else %}
