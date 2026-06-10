@@ -6,7 +6,9 @@ import os
 
 load_dotenv()
 app = Flask(__name__)
-app.secret_key = os.getenv("SECRET_KEY", "clave_dev_temporal")  # Clave secreta para la sesión, se recomienda usar una clave segura en producción
+app.secret_key = os.getenv(
+    "SECRET_KEY", "clave_dev_temporal"
+)  # Clave secreta para la sesión, se recomienda usar una clave segura en producción
 UPLOAD_FOLDER = os.path.join("static", "img", "productos")
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
@@ -18,9 +20,9 @@ def obtener_conexion():
         user=os.getenv("DB_USER"),
         password=os.getenv("DB_PASSWORD"),
         database=os.getenv("DB_NAME"),
-        port=os.getenv("DB_PORT", 3306)
+        port=os.getenv("DB_PORT", 3306),
     )
-    return conn # Esta línea debe estar al mismo nivel que 'conn ='
+    return conn  # Esta línea debe estar al mismo nivel que 'conn ='
 
 
 @app.route("/")
@@ -167,6 +169,7 @@ def agregar_al_carrito():
             cursor.close()
             conexion.close()
             flash("Producto agregado al carrito", "exito")
+        return redirect(url_for('index'))
 
     except mysql.connector.Error as err:
         return f"Error al conectar a la base de datos: {err}"
@@ -219,7 +222,8 @@ def admin():
 
     except mysql.connector.Error as err:
         return f"Error al conectar a la base de datos: {err}"
-    
+
+
 @app.route("/eliminar_producto/<int:id>")
 def eliminar_producto(id):
     if session.get("rol") != "admin":
@@ -234,36 +238,39 @@ def eliminar_producto(id):
         conexion.close()
 
         flash("Producto eliminado correctamente", "exito")
-        return redirect (url_for("admin"))
+        return redirect(url_for("admin"))
     except mysql.connector.Error as err:
         return f"Error al eliminar producto: {err}"
-    
+
+
 @app.route("/modificar_producto/<int:id>", methods=["GET", "POST"])
 def modificar_producto(id):
     if session.get("rol") != "admin":
         return redirect(url_for("index"))
-    
+
     conexion = obtener_conexion()
     cursor = conexion.cursor(dictionary=True)
-    
+
     if request.method == "POST":
         nombre = request.form["nombre"]
         precio = request.form["precio"]
         stock = request.form["stock"]
-        
-        cursor.execute("UPDATE producto SET nombre=%s, precio=%s, stock=%s WHERE id_producto=%s", 
-                       (nombre, precio, stock, id))
+
+        cursor.execute(
+            "UPDATE producto SET nombre=%s, precio=%s, stock=%s WHERE id_producto=%s",
+            (nombre, precio, stock, id),
+        )
         conexion.commit()
         cursor.close()
         conexion.close()
         flash("Producto actualizado correctamente", "exito")
         return redirect(url_for("admin"))
-    
+
     cursor.execute("SELECT * FROM producto WHERE id_producto = %s", (id,))
     producto = cursor.fetchone()
     cursor.close()
     conexion.close()
-    
+
     return render_template("editar.html", producto=producto)
 
 
