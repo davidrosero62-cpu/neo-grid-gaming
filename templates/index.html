@@ -97,6 +97,46 @@
         </div>
       </section>
     </main>
+    
+       <a href="https://wa.me/573020000000" class="btn-whatsapp" target="_blank">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp">
+    </a>
+
+    <div class="accesibilidad-menu">
+        <button onclick="cambiarFuente(1)" title="Aumentar letra">A+</button>
+        <button onclick="cambiarFuente(-1)" title="Disminuir letra">A-</button>
+        <button onclick="toggleContraste()" title="Alto Contraste">🌓</button>
+    </div>
+
+     <footer class="footer-info">
+        <div class="contacto-detalles">
+            <p>📞 +57 3020000000</p>
+            <p>📍 Calle 38 a #13a - 24 - Villavicencio. Colombia.</p>
+            <p>🕒 Horario de Atención: de Lunes a Sábado de 11 a.m a 6 p.m</p>
+
+            <div class="notas-importantes">
+                <p><strong>LA SEDE</strong> es únicamente para Asesorías, Pagos Presenciales, Garantías y Soporte Técnico.</p>
+                <p><strong>RECUERDE</strong> QUE TODOS LOS PRODUCTOS SON POR DESPACHO DIRECTO A CLIENTE DESDE VILLAVICENCIO.</p>
+            </div>
+
+            <div class="politicas">
+                <h4>Políticas de Garantía y productos:</h4>
+                <a href="https://www.neogridgaming.co/refund-policy" target="_blank">https://www.neogridgaming.co/refund-policy</a>
+            </div>
+        </div>
+
+        <div class="metodos-pago-footer">
+            <span>MÉTODOS DE PAGO ACEPTADOS</span>
+            <div class="logos-pago">
+                <img src="{{ url_for('static', filename='img/pse.png') }}" alt="pse">
+                <img src="{{ url_for('static', filename='img/epayco.png') }}" alt="epayco">
+                <img src="{{ url_for('static', filename='img/visa.png') }}" alt="visa">
+                <img src="{{ url_for('static', filename='img/mastercard.png') }}" alt="mastercard">
+            </div>
+        </div>
+    </footer>
+
+
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
   </body>
 </html>

@@ -121,8 +121,8 @@ h3 {
   text-decoration: none;
   background-color: transparent;
   color: #fcffff;
-  border: 2px solid #05630d;
-  padding: 14px 36px;
+  border: 2px solid #055d63;
+  padding: 5px 36px;
   font-family: "Orbitron", sans-serif;
   font-size: 1rem;
   text-transform: uppercase;
@@ -130,7 +130,7 @@ h3 {
   transition: 0.3s;
 }
 .boton-catalogo:hover {
-  background-color: #006e09;
+  background-color: #055d63;
   color: #0f0f0f;
 }
 
@@ -383,4 +383,204 @@ h3 {
 
 .grupo-input select:focus {
   border-color: #006e09;
+}
+
+/*menu accesibilidad
+/* Botones con estilo Gamer */
+.accesibilidad-menu {
+    position: fixed !important; /*important prioriza la regla*/
+    right: 0 !important;   
+    left: auto !important;    
+    bottom: 120px !important;    
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.8);
+    border: 1px solid #00f2ff;
+    border-right: none;          
+    border-radius: 10px 0 0 10px; 
+    z-index: 100000 !important; 
+}
+
+/* Estilo de los botones */
+.accesibilidad-menu button {
+    width: 40px;
+    height: 40px;
+    background: #111;
+    color: #00f2ff;
+    border: 1px solid #00f2ff;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.accesibilidad-menu button:hover {
+    background: #00f2ff;
+    color: #000;
+    box-shadow: 0 0 15px #00f2ff;
+}
+
+.alto-contraste {
+    filter: contrast(150%) grayscale(100%);
+    background: black !important;
+    color: yellow !important
+
+}
+
+/* Integración con el menú de accesibilidad */
+body.alto-contraste .footer-info {
+    background-color: #000000 !important;
+    color: #ffff00 !important;
+    border-top: 2px solid #ffff00;
+}
+
+body.alto-contraste .footer-info *,
+body.alto-contraste .politicas a,
+body.alto-contraste .politicas h4,
+body.alto-contraste .notas-importantes p strong {
+    color: #ffff00 !important;
+}
+
+/*Boton Whatsapp*/
+.btn-whatsapp {
+    position: fixed;
+    bottom: 20px;
+    right: 10px;
+    width: 60px;
+    height: 60px;
+    z-index: 9999;
+}
+
+.btn-whatsapp img {
+    width: 100%;
+    transition: 0.3s;
+}
+
+.btn-whatsapp:hover {
+    transform: scale(1.1);
+}
+
+/*Footer*/
+.footer-info {
+    background-color: #0d0d0d;
+    color: #ffffff;
+    padding: 50px 10%;
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    border-top: 2px solid #00f2ff;
+    box-shadow: 0 -5px 15px rgba(0, 242, 255, 0.1);
+}
+
+.contacto-detalles p {
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+}
+
+.notas-importantes p strong {
+  color: #00f2ff;
+}
+
+.notas-importantes {
+    margin: 30px 0;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    border-left: 3px solid #00f2ff;
+    padding-left: 15px;
+}
+
+.politicas h4 {
+    margin-bottom: 5px;
+    color: #00f2ff;
+}
+
+.politicas a {
+    color: #00f2ff;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.politicas a:hover {
+  color: #00f2ff;
+  text-decoration: none;
+  transition: 0.3s;
+}
+
+.metodos-pago-footer {
+    border-top: 1px solid #222222;
+    margin-top: 40px;
+    padding-top: 20px;
+    text-align: center;
+}
+
+.metodos-pago-footer span {
+    font-size: 0.7rem;
+    color: #666;
+    letter-spacing: 2px;
+}
+
+.logos-pago {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 15px;
+    flex-wrap: wrap;
+}
+
+.logos-pago img {
+  height: 30px;
+  filter: brightness(0) invert(1);
+  opacity: 0.7;
+  transition: 0.3s;
+}
+
+.logos-pago img:hover {
+    opacity: 1;
+    filter: none; 
+}
+
+/* 1. Candado de seguridad para que nada en la web desborde hacia los lados */
+html, body {
+    overflow-x: hidden;
+    width: 100%;
+}
+
+/* 2. Aseguramos que la cuadrícula de productos no se estire más allá de la pantalla */
+.grid-productos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    width: 100%;
+    max-width: 1200px; /* O el ancho máximo que prefieras para tu tienda */
+    margin: 0 auto;
+    padding: 20px;
+    box-sizing: border-box; 
+}
+
+/* 3. Evitamos que la tarjeta se deforme */
+.tarjeta-producto {
+    display: flex;
+    flex-direction: column;
+    background: #111; /* Fondo oscuro gamer */
+    border: 1px solid #333;
+    border-radius: 8px;
+    overflow: hidden; /* Corta cualquier cosa que intente salirse de la tarjeta */
+    width: 100%;
+}
+
+/* 4. ¡EL TRUCO CLAVE! Controlamos el contenedor de la imagen */
+.imagen-producto {
+    width: 100%;
+    height: 250px; /* Altura fija para que todas las fotos midan exactamente igual */
+    overflow: hidden; 
+    background-color: #000; /* Fondo negro por si la imagen es transparente */
+}
+
+/* 5. Forzamos a la imagen a adaptarse perfectamente sin romper el diseño */
+.imagen-producto img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover; /* Recorta y adapta la foto de forma inteligente estilo catálogo pro */
+    display: block;
 }
