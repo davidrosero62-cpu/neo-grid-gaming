@@ -340,7 +340,17 @@ h3 {
   padding: 8px 16px;
   font-family: "Orbitron", sans-serif;
   font-size: 0.75rem;
-  text-transform: uppercase;
+  transition: 0.3s;
+}
+
+.btn-logout-index {
+  text-decoration: none;
+  color: #000000;
+  background-color: #006e09;
+  text-overflow: clip;
+  padding: 0%;
+  font-family: "Orbitron", sans-serif;
+  font-size: 0.40rem;
   transition: 0.3s;
 }
 

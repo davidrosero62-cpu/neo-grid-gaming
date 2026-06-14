@@ -45,18 +45,21 @@ def register():
         nombres = request.form["nombre"]
         correo = request.form["email"]
         password = request.form["password"]
+        rol_por_defecto = 'user'
         try:
             connexion = obtener_conexion()
             cursor = connexion.cursor()
             # Verificar si el correo ya existe
             cursor.execute("SELECT idusuario FROM usuario WHERE correo = %s", [correo])
             if cursor.fetchone():
+                cursor.close()
+                connexion.close()
                 flash("El corrreo ya esta registrado", "error")
                 return redirect(url_for("register"))
             # insertar nuevo usuario
             cursor.execute(
                 "INSERT INTO usuario (nombres, correo, password, rol) VALUES (%s, %s, %s, %s)",
-                (nombres, correo, password, "cliente"),
+                (nombres, correo, password,rol_por_defecto),
             )
             connexion.commit()
             cursor.close()

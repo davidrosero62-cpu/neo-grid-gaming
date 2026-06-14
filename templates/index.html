@@ -39,22 +39,30 @@
           <li><a href="#">Nosotros</a></li>
           <li><a href="#">Políticas</a></li>
         </ul>
+
         <div class="cart">
           <a href="#">
             <i class="fas fa-shopping-cart"></i>
-          <span id="cart-count">0</span>
+            <span id="cart-count">0</span>
           </a>
+          {% if session.get('rol') == 'admin' or session.get('rol') == 'user' %}
           <div class="login">
-            
-            
+            <a href="{{ url_for('logout') }}" class="btn-logout-index"
+              >Cerrar Sesión</a
+            >
+            {% endif %}
+
             <a href="{{ url_for('login')}}"><i class="fas fa-user"></i></a>
-            
 
             {% if session.get('rol') == 'admin' %}
-              <a href="{{ url_for('admin') }}" class="btn-panel-nav" title="Panel de Administración">
-                <i class="fas fa-user-shield"></i>Admin
-              </a>
-              {% endif %}
+            <a
+              href="{{ url_for('admin') }}"
+              class="btn-panel-nav"
+              title="Panel de Administración"
+            >
+              <i class="fas fa-user-shield"></i>Admin
+            </a>
+            {% endif %}
           </div>
         </div>
       </nav>
@@ -71,71 +79,102 @@
       </section>
       <section id="catalogo" class="contenedor-productos">
         <h2 class="titulo-seccion">Nuestros Productos</h2>
-        
+
         <div class="grid-productos">
           {% for producto in productos %}
-            <div class="tarjeta-producto">
-              <div class="imagen-producto">
-                <img src="{{ url_for('static', filename='img/productos/' + producto.imagen) }}" alt="{{ producto.nombre }}">
-              </div>
-              <div class="info-producto">
-                <h3>{{ producto.nombre }}</h3>
-                <p class="descripcion-corta">{{ producto.descripcion }}</p>
-                <p class="precio">${{ "{:,.0f}".format(producto.precio) }}</p>
-                
-                <form action="{{ url_for('agregar_al_carrito') }}" method="POST">
-                  <input type="hidden" name="id_producto" value="{{ producto.id_producto }}">
-                  <button type="submit" class="btn-agregar-carrito">
-                    <i class="fas fa-shopping-cart"></i> Agregar al Carrito
-                  </button>
-                </form>
-              </div>
+          <div class="tarjeta-producto">
+            <div class="imagen-producto">
+              <img
+                src="{{ url_for('static', filename='img/productos/' + producto.imagen) }}"
+                alt="{{ producto.nombre }}"
+              />
             </div>
+            <div class="info-producto">
+              <h3>{{ producto.nombre }}</h3>
+              <p class="descripcion-corta">{{ producto.descripcion }}</p>
+              <p class="precio">${{ "{:,.0f}".format(producto.precio) }}</p>
+
+              <form action="{{ url_for('agregar_al_carrito') }}" method="POST">
+                <input
+                  type="hidden"
+                  name="id_producto"
+                  value="{{ producto.id_producto }}"
+                />
+                <button type="submit" class="btn-agregar-carrito">
+                  <i class="fas fa-shopping-cart"></i> Agregar al Carrito
+                </button>
+              </form>
+            </div>
+          </div>
           {% else %}
-            <p class="no-productos">No hay productos disponibles en este momento.</p>
+          <p class="no-productos">
+            No hay productos disponibles en este momento.
+          </p>
           {% endfor %}
         </div>
       </section>
     </main>
-    
-       <a href="https://wa.me/573020000000" class="btn-whatsapp" target="_blank">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp">
+
+    <a href="https://wa.me/573020000000" class="btn-whatsapp" target="_blank">
+      <img
+        src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg"
+        alt="WhatsApp"
+      />
     </a>
 
     <div class="accesibilidad-menu">
-        <button onclick="cambiarFuente(1)" title="Aumentar letra">A+</button>
-        <button onclick="cambiarFuente(-1)" title="Disminuir letra">A-</button>
-        <button onclick="toggleContraste()" title="Alto Contraste">🌓</button>
+      <button onclick="cambiarFuente(1)" title="Aumentar letra">A+</button>
+      <button onclick="cambiarFuente(-1)" title="Disminuir letra">A-</button>
+      <button onclick="toggleContraste()" title="Alto Contraste">🌓</button>
     </div>
 
-     <footer class="footer-info">
-        <div class="contacto-detalles">
-            <p>📞 +57 3020000000</p>
-            <p>📍 Calle 38 a #13a - 24 - Villavicencio. Colombia.</p>
-            <p>🕒 Horario de Atención: de Lunes a Sábado de 11 a.m a 6 p.m</p>
+    <footer class="footer-info">
+      <div class="contacto-detalles">
+        <p>📞 +57 3020000000</p>
+        <p>📍 Calle 38 a #13a - 24 - Villavicencio. Colombia.</p>
+        <p>🕒 Horario de Atención: de Lunes a Sábado de 11 a.m a 6 p.m</p>
 
-            <div class="notas-importantes">
-                <p><strong>LA SEDE</strong> es únicamente para Asesorías, Pagos Presenciales, Garantías y Soporte Técnico.</p>
-                <p><strong>RECUERDE</strong> QUE TODOS LOS PRODUCTOS SON POR DESPACHO DIRECTO A CLIENTE DESDE VILLAVICENCIO.</p>
-            </div>
-
-            <div class="politicas">
-                <h4>Políticas de Garantía y productos:</h4>
-                <a href="https://www.neogridgaming.co/refund-policy" target="_blank">https://www.neogridgaming.co/refund-policy</a>
-            </div>
+        <div class="notas-importantes">
+          <p>
+            <strong>LA SEDE</strong> es únicamente para Asesorías, Pagos
+            Presenciales, Garantías y Soporte Técnico.
+          </p>
+          <p>
+            <strong>RECUERDE</strong> QUE TODOS LOS PRODUCTOS SON POR DESPACHO
+            DIRECTO A CLIENTE DESDE VILLAVICENCIO.
+          </p>
         </div>
 
-        <div class="metodos-pago-footer">
-            <span>MÉTODOS DE PAGO ACEPTADOS</span>
-            <div class="logos-pago">
-                <img src="{{ url_for('static', filename='img/pse.png') }}" alt="pse">
-                <img src="{{ url_for('static', filename='img/epayco.png') }}" alt="epayco">
-                <img src="{{ url_for('static', filename='img/visa.png') }}" alt="visa">
-                <img src="{{ url_for('static', filename='img/mastercard.png') }}" alt="mastercard">
-            </div>
+        <div class="politicas">
+          <h4>Políticas de Garantía y productos:</h4>
+          <a href="https://www.neogridgaming.co/refund-policy" target="_blank"
+            >https://www.neogridgaming.co/refund-policy</a
+          >
         </div>
+      </div>
+
+      <div class="metodos-pago-footer">
+        <span>MÉTODOS DE PAGO ACEPTADOS</span>
+        <div class="logos-pago">
+          <img
+            src="{{ url_for('static', filename='img/pse.png') }}"
+            alt="pse"
+          />
+          <img
+            src="{{ url_for('static', filename='img/epayco.png') }}"
+            alt="epayco"
+          />
+          <img
+            src="{{ url_for('static', filename='img/visa.png') }}"
+            alt="visa"
+          />
+          <img
+            src="{{ url_for('static', filename='img/mastercard.png') }}"
+            alt="mastercard"
+          />
+        </div>
+      </div>
     </footer>
-
 
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
   </body>
