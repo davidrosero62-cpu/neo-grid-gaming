@@ -556,41 +556,41 @@ html, body {
     width: 100%;
 }
 
-/* 2. Aseguramos que la cuadrícula de productos no se estire más allá de la pantalla */
+/* 2. Asegurar que la cuadrícula de productos no se estire más allá de la pantalla */
 .grid-productos {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 20px;
     width: 100%;
-    max-width: 1200px; /* O el ancho máximo que prefieras para tu tienda */
+    max-width: 1200px; 
     margin: 0 auto;
     padding: 20px;
     box-sizing: border-box; 
 }
 
-/* 3. Evitamos que la tarjeta se deforme */
+/* 3. Evitá que la tarjeta se deforme */
 .tarjeta-producto {
     display: flex;
     flex-direction: column;
-    background: #111; /* Fondo oscuro gamer */
+    background: #111; 
     border: 1px solid #333;
     border-radius: 8px;
-    overflow: hidden; /* Corta cualquier cosa que intente salirse de la tarjeta */
+    overflow: hidden; 
     width: 100%;
 }
 
-/* 4. ¡EL TRUCO CLAVE! Controlamos el contenedor de la imagen */
+/* Controlamos el contenedor de la imagen */
 .imagen-producto {
     width: 100%;
-    height: 250px; /* Altura fija para que todas las fotos midan exactamente igual */
+    height: 250px; 
     overflow: hidden; 
-    background-color: #000; /* Fondo negro por si la imagen es transparente */
+    background-color: #000;
 }
 
-/* 5. Forzamos a la imagen a adaptarse perfectamente sin romper el diseño */
+/* 5. Forzar a la imagen a adaptarse perfectamente sin romper el diseño */
 .imagen-producto img {
     width: 100% !important;
     height: 100% !important;
-    object-fit: cover; /* Recorta y adapta la foto de forma inteligente estilo catálogo pro */
+    object-fit: cover; 
     display: block;
 }

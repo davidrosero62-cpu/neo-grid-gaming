@@ -14,7 +14,7 @@ app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
 
 def obtener_conexion():
-    # Asegúrate de que TODAS estas líneas tengan los mismos espacios (4 espacios)
+    
     conn = mysql.connector.connect(
         host=os.getenv("DB_HOST"),
         user=os.getenv("DB_USER"),
@@ -22,7 +22,7 @@ def obtener_conexion():
         database=os.getenv("DB_NAME"),
         port=os.getenv("DB_PORT", 3306),
     )
-    return conn  # Esta línea debe estar al mismo nivel que 'conn ='
+    return conn  
 
 
 @app.route("/")
