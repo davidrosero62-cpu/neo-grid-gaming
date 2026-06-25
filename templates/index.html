@@ -3,20 +3,16 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-    />
+    
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet" />
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    
     <title>Neo Grid Gaming</title>
+    
     <link rel="icon" href="../static/img/icon.png?v=1" type="image/x-icon" />
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='css/style.css') }}"
-    />
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
   </head>
 
   <body>
@@ -24,13 +20,10 @@
       <nav class="navbar">
         <div class="logo">
           <a href="{{ url_for('index') }}" class="logo-link">
-            <img
-              src="{{ url_for('static', filename='img/logo.svg') }}"
-              alt="Neo Grid Gaming"
-              class="img-logo"
-            />
+            <img src="{{ url_for('static', filename='img/logo.svg') }}" alt="Neo Grid Gaming" class="img-logo" />
           </a>
         </div>
+        
         <ul class="nav-links">
           <li><a href="#">Consolas</a></li>
           <li><a href="#">PC</a></li>
@@ -41,85 +34,82 @@
         </ul>
 
         <div class="cart">
-          <a href="#">
+          <a href="{{ url_for('carrito') }}" id="cart-icon">
             <i class="fas fa-shopping-cart"></i>
             <span id="cart-count">0</span>
           </a>
-          {% if session.get('rol') == 'admin' or session.get('rol') == 'user' %}
+
           <div class="login">
-            <a href="{{ url_for('logout') }}" class="btn-logout-index"
-              >Cerrar Sesión</a
-            >
-            {% endif %}
+            {% if session.get('rol') == 'admin' or session.get('rol') == 'user' or session.get('rol') == 'cliente' %}
+              
+              <a href="{{ url_for('logout') }}" class="btn-panel-nav" title="Cerrar Sesión">
+                <i class="fas fa-arrow-right-from-bracket"></i>
+              </a>
 
-            <a href="{{ url_for('login')}}"><i class="fas fa-user"></i></a>
-
-            {% if session.get('rol') == 'admin' %}
-            <a
-              href="{{ url_for('admin') }}"
-              class="btn-panel-nav"
-              title="Panel de Administración"
-            >
-              <i class="fas fa-user-shield"></i>Admin
-            </a>
+              {% if session.get('rol') == 'admin' %}
+                <a href="{{ url_for('admin') }}" class="btn-panel-nav" title="Panel de Administración">
+                  <i class="fas fa-user-shield"></i>Admin
+                </a>
+              {% endif %} 
+            
+            {% else %}
+              <a href="{{ url_for('login') }}"><i class="fas fa-user"></i> Iniciar Sesión</a>
             {% endif %}
           </div>
         </div>
       </nav>
     </header>
+
     <main>
-      {% with messages = get_flashed_messages(with_categories=true) %} {% if
-      messages %} {% for category, message in messages %}
-      <div class="alerta alerta-{{ category }}">{{ message }}</div>
-      {% endfor %} {% endif %} {% endwith %}
+      {% with messages = get_flashed_messages(with_categories=true) %} 
+        {% if messages %} 
+          {% for category, message in messages %}
+            <div class="alerta alerta-{{ category }}">{{ message }}</div>
+          {% endfor %} 
+        {% endif %} 
+      {% endwith %}
+
       <section class="hero">
         <div class="hero-contenido">
-          <a href="#" class="boton-catalogo">ver Catálogo</a>
+          <a href="#catalogo" class="boton-catalogo">ver Catálogo</a>
         </div>
       </section>
+
       <section id="catalogo" class="contenedor-productos">
         <h2 class="titulo-seccion">Nuestros Productos</h2>
 
         <div class="grid-productos">
           {% for producto in productos %}
-          <div class="tarjeta-producto">
-            <div class="imagen-producto">
-              <img
-                src="{{ url_for('static', filename='img/productos/' + producto.imagen) }}"
-                alt="{{ producto.nombre }}"
-              />
-            </div>
-            <div class="info-producto">
-              <h3>{{ producto.nombre }}</h3>
-              <p class="descripcion-corta">{{ producto.descripcion }}</p>
-              <p class="precio">${{ "{:,.0f}".format(producto.precio) }}</p>
+            <div class="tarjeta-producto">
+              <div class="imagen-producto">
+                <img src="{{ url_for('static', filename='img/productos/' + producto.imagen) }}" alt="{{ producto.nombre }}" />
+              </div>
+              
+              <div class="info-producto">
+                <h3>{{ producto.nombre }}</h3>
+                <p class="descripcion-corta">{{ producto.descripcion }}</p>
+                <p class="precio">${{ "{:,.0f}".format(producto.precio) }}</p>
 
-              <form action="{{ url_for('agregar_al_carrito') }}" method="POST">
-                <input
-                  type="hidden"
-                  name="id_producto"
-                  value="{{ producto.id_producto }}"
-                />
-                <button type="submit" class="btn-agregar-carrito">
-                  <i class="fas fa-shopping-cart"></i> Agregar al Carrito
-                </button>
-              </form>
+                <form action="{{ url_for('agregar_al_carrito') }}" method="POST">
+                  <input type="hidden" name="id_producto" value="{{ producto.id_producto }}" />
+                  <button type="submit" class="btn-agregar-carrito">
+                    <i class="fas fa-shopping-cart"></i> Agregar al Carrito
+                  </button>
+                </form>
+              </div>
             </div>
-          </div>
+          
           {% else %}
-          <p class="no-productos">
-            No hay productos disponibles en este momento.
-          </p>
+            <p class="no-productos">
+              No hay productos disponibles en este momento.
+            </p>
           {% endfor %}
         </div>
       </section>
     </main>
 
     <a href="https://wa.me/573020000000" class="btn-whatsapp" target="_blank">
-      <img
-        src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg"
-        alt="WhatsApp"
-      />
+      <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp" />
     </a>
 
     <div class="accesibilidad-menu">
@@ -135,43 +125,23 @@
         <p>🕒 Horario de Atención: de Lunes a Sábado de 11 a.m a 6 p.m</p>
 
         <div class="notas-importantes">
-          <p>
-            <strong>LA SEDE</strong> es únicamente para Asesorías, Pagos
-            Presenciales, Garantías y Soporte Técnico.
-          </p>
-          <p>
-            <strong>RECUERDE</strong> QUE TODOS LOS PRODUCTOS SON POR DESPACHO
-            DIRECTO A CLIENTE DESDE VILLAVICENCIO.
-          </p>
+          <p><strong>LA SEDE</strong> es únicamente para Asesorías, Pagos Presenciales, Garantías y Soporte Técnico.</p>
+          <p><strong>RECUERDE</strong> QUE TODOS LOS PRODUCTOS SON POR DESPACHO DIRECTO A CLIENTE DESDE VILLAVICENCIO.</p>
         </div>
 
         <div class="politicas">
           <h4>Políticas de Garantía y productos:</h4>
-          <a href="https://www.neogridgaming.co/refund-policy" target="_blank"
-            >https://www.neogridgaming.co/refund-policy</a
-          >
+          <a href="https://www.neogridgaming.co/refund-policy" target="_blank">https://www.neogridgaming.co/refund-policy</a>
         </div>
       </div>
 
       <div class="metodos-pago-footer">
         <span>MÉTODOS DE PAGO ACEPTADOS</span>
         <div class="logos-pago">
-          <img
-            src="{{ url_for('static', filename='img/pse.png') }}"
-            alt="pse"
-          />
-          <img
-            src="{{ url_for('static', filename='img/epayco.png') }}"
-            alt="epayco"
-          />
-          <img
-            src="{{ url_for('static', filename='img/visa.png') }}"
-            alt="visa"
-          />
-          <img
-            src="{{ url_for('static', filename='img/mastercard.png') }}"
-            alt="mastercard"
-          />
+          <img src="{{ url_for('static', filename='img/pse.png') }}" alt="pse" />
+          <img src="{{ url_for('static', filename='img/epayco.png') }}" alt="epayco" />
+          <img src="{{ url_for('static', filename='img/visa.png') }}" alt="visa" />
+          <img src="{{ url_for('static', filename='img/mastercard.png') }}" alt="mastercard" />
         </div>
       </div>
     </footer>
