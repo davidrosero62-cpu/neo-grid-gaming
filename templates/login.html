@@ -28,10 +28,13 @@
     </header>
     <main>
       <div class="contenedor-login">
-        {% with messages = get_flashed_messages(with_categories=true) %} {% if
-        messages %} {%for category,message in messages %}
-        <div class="alerta alerta={{category}}">{{message}}</div>
-        {% endfor %} {% endif %} {%endwith %}
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alerta alerta-{{ category }}">{{ message }}</div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
 
         <h1>Iniciar Sesión</h1>
         <form action="/login" method="POST" class="formulario">

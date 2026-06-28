@@ -36,7 +36,7 @@
         <div class="cart">
           <a href="{{ url_for('carrito') }}" id="cart-icon">
             <i class="fas fa-shopping-cart"></i>
-            <span id="cart-count">0</span>
+            <span id="cart-count">{{cart_count}}</span>
           </a>
 
           <div class="login">
@@ -61,13 +61,19 @@
     </header>
 
     <main>
-      {% with messages = get_flashed_messages(with_categories=true) %} 
-        {% if messages %} 
-          {% for category, message in messages %}
-            <div class="alerta alerta-{{ category }}">{{ message }}</div>
-          {% endfor %} 
-        {% endif %} 
-      {% endwith %}
+     <!-- Contenedor de alertas controlado -->
+      <div class="contenedor-alertas" style="max-width: 1200px; margin: 20px auto; padding: 0 20px;">
+        {% with messages = get_flashed_messages(with_categories=true) %} 
+          {% if messages %} 
+            {% for category, message in messages %}
+              <div class="alerta alerta-{{ category }}" style="background: rgba(0, 0, 0, 0.8); border: 1px solid #006e09; color: #fff; padding: 15px; margin-bottom: 10px; font-family: 'Rajdhani', sans-serif; text-transform: uppercase; box-shadow: 0 0 10px #006e09;">
+                <i class="fas fa-info-circle" style="color: #00ffcc; margin-right: 10px;"></i>
+                {{ message }}
+              </div>
+            {% endfor %} 
+          {% endif %} 
+        {% endwith %}
+      </div>
 
       <section class="hero">
         <div class="hero-contenido">
@@ -87,11 +93,11 @@
               
               <div class="info-producto">
                 <h3>{{ producto.nombre }}</h3>
-                <p class="descripcion-corta">{{ producto.descripcion }}</p>
+                <p class="descripcion-corta" style="white-space: pre-line;">{{ producto.descripcion }}</p>
                 <p class="precio">${{ "{:,.0f}".format(producto.precio) }}</p>
 
                 <form action="{{ url_for('agregar_al_carrito') }}" method="POST">
-                  <input type="hidden" name="id_producto" value="{{ producto.id_producto }}" />
+                  <input type="hidden" name="id_producto" value="{{ producto['id_producto'] }}" />
                   <button type="submit" class="btn-agregar-carrito">
                     <i class="fas fa-shopping-cart"></i> Agregar al Carrito
                   </button>

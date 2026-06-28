@@ -176,8 +176,9 @@ h3 {
 }
 
 .grupo-input input {
-  background-color: #1a1a1a;
-  border: 1px solid #333333;
+  background-color: rgba(46, 44, 44, 0.975);
+  border-color: #006e09;
+  border: 1px solid ;
   padding: 12px;
   font-family: "Rajdhani", sans-serif;
   font-size: 1rem;
@@ -558,29 +559,108 @@ html, body {
     box-sizing: border-box; 
 }
 
-/* 3. Evitá que la tarjeta se deforme */
+/* 1. Ajustes a la Tarjeta del Producto */
 .tarjeta-producto {
+    background: rgba(10, 10, 15, 0.85);
+    border: 2px solid #00ffcc; /* Verde neón característico */
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 0 15px rgba(0, 255, 204, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
     display: flex;
     flex-direction: column;
-    background: #111; 
-    border: 1px solid #333;
-    border-radius: 8px;
-    overflow: hidden; 
-    width: 100%;
 }
 
-/* Controlamos el contenedor de la imagen */
+.tarjeta-producto:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0 25px rgba(0, 255, 204, 0.5), 0 0 10px #ff007f; /* Doble neón en hover */
+}
+
+/* 2. SOLUCIÓN A LA IMAGEN: Para que se vea COMPLETA sin recortarse */
 .imagen-producto {
     width: 100%;
-    height: 250px; 
-    overflow: hidden; 
-    background-color: #000;
+    height: 320px; /* Le damos buena altura para consolas o cajas */
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+    border-bottom: 1px solid rgba(3, 83, 20, 0.3); /* Línea divisoria rosa */
 }
 
-/* 5. Forzar a la imagen a adaptarse perfectamente sin romper el diseño */
 .imagen-producto img {
-    width: 100% !important;
-    height: 100% !important;
-    object-fit: cover; 
-    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain; 
+}
+
+/* 3. Estilos del Bloque de Información */
+.info-producto {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+/* Título estilo Cyberpunk (Orbitron) */
+.info-producto h3 {
+    font-family: 'Orbitron', sans-serif;
+    color: #ffffff;
+    font-size: 1.5rem;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    letter-spacing: 1px;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+}
+
+/* Descripción del Juego/Consola (Rajdhani) */
+.info-producto .descripcion-corta {
+    font-family: 'Rajdhani', sans-serif;
+    color: #b3b3b3;
+    font-size: 1rem;
+    line-height: 1.5;
+    margin-bottom: 15px;
+    font-weight: 500;
+}
+
+/* Precio con resalte Neón */
+.info-producto .precio {
+    font-family: 'Orbitron', sans-serif;
+    color: #00ffcc;
+    font-size: 1.6rem;
+    font-weight: 900;
+    margin-top: auto; /* Empuja el precio y el botón al fondo si las tarjetas varían de tamaño */
+    margin-bottom: 15px;
+    text-shadow: 0 0 10px rgba(0, 255, 204, 0.6);
+}
+
+/* 4. Botón Agregar al Carrito a juego con la tienda */
+.btn-agregar-carrito {
+    width: 100%;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 1.1rem;
+    letter-spacing: 1px;
+    background: transparent;
+    border: 2px solid #006e09; /* Rosa neón */
+    color: #006e09;
+    padding: 12px;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.btn-agregar-carrito i {
+    font-size: 0.95rem;
+}
+
+.btn-agregar-carrito:hover {
+    background: #00ccff;
+    color: #ffffff;
+    box-shadow: 0 0 15px #006e09;
 }

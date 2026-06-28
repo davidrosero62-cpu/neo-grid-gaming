@@ -45,6 +45,11 @@
                 <input type="number" name="stock" value="{{ producto.stock }}" required>
             </div>
 
+            <div class="grupo-input">
+                <label>descripcion</label>
+                <textarea name="descripcion" required>{{producto['descripcion'] }}</textarea>
+            </div>
+
             <button type="submit" class="btn-submit">Guardar Cambios</button>
         </form>
     </main>

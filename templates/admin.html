@@ -109,7 +109,12 @@
               <td>{{ producto.stock }}</td>
               <td>{{ producto.categoria_id_categoria }}</td>
               <td>
-                <a href="{{ url_for('eliminar_producto', id=producto.id_producto) }}" class="btn-eliminar" onclick="return confirm('¿Está seguro de eliminar este producto?')">Eliminar</a>
+                <form action="{{url_for('eliminar_producto', id=producto.id_producto) }}"
+                      method="POST"
+                      style="display: inline;"
+                      onsubmit="return confirm('¿Está seguro de eliminar este producto?')">
+                    <button type="submit" class="btn-eliminar">Eliminar</button>
+                </form>
                 <a href="{{ url_for('modificar_producto', id=producto.id_producto) }}" class="btn-eliminar">Modificar</a>
               </td>
             </tr>
