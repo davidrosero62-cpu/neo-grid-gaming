@@ -16,6 +16,7 @@ ordered-set==4.1.0
 packaging==26.2
 pathspec==1.1.0
 platformdirs==4.9.6
+PyJWT==2.13.0
 python-dotenv==1.2.2
 pytokens==0.4.1
 typing_extensions==4.15.0
