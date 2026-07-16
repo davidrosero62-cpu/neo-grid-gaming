@@ -38,10 +38,9 @@ try {
 
     const data = await response.json();
     if (response.ok) {
-        setMensaje(data.mensaje);
-        setTimeout(() => {
-            navigate("/login")
-        }, 300);
+        // Redirigimos sin retrasos, enviando el mensaje en el equipaje de la ruta
+        navigate("/login", {state: { mensajeExito: data.mensaje } });
+        
     } else {
         // Si el servidor respondio con error (400, 500, etc)
         // Mostramos el mensaje que viene desde el backend
