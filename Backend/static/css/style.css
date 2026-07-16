@@ -1,0 +1,666 @@
+/* ===== BASE / RESET ===== */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* ===== BASE / BODY ===== */
+body {
+  background: linear-gradient(135deg, #000000, #161616);
+  font-family: "Rajdhani", sans-serif;
+  margin: 0;
+  padding: 0;
+  color: #ffffff;
+}
+
+/* ===== TIPOGRAFÍA ===== */
+h1,
+h2,
+h3 {
+  font-family: "Orbitron", sans-serif;
+}
+
+/* ===== LOGO ===== */
+.logo {
+  display: flex;
+  align-items: center;
+}
+
+/* ===== NAVBAR ===== */
+.img-logo {
+  height: 50px;
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 0 8px #1eff00);
+}
+
+.logo-link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.navbar ul {
+  display: flex;
+  list-style: none;
+  gap: 2rem;
+  padding: 0;
+  margin: 0;
+}
+
+.navbar ul li a:hover {
+  color: #006e09;
+}
+
+.navbar ul li a {
+  text-decoration: none;
+  color: #cccccc;
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 0.875rem;
+  transition: 0.3s;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between; /* Logo a la izq, Menú al centro, Carrito a la der */
+  align-items: center;
+  padding: 0 24px;
+  width: 100%;
+  background-color: #000000;
+}
+/* ===== CART ===== */
+.cart {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.cart a {
+  text-decoration: none;
+  font-size: 1.5rem;
+  color: #cccccc;
+  transition: 0.3s;
+}
+
+.cart a:hover {
+  color: #006e09;
+}
+
+.cart span {
+  color: #cccccc;
+  font-weight: bold;
+  font-size: 0.875rem;
+}
+
+/* ===== HERO ===== */
+.hero {
+  width: 100%;
+  height: 71vh;
+  background-image: url("../img/hero.webp");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-contenido {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-end;
+  width: 100%;
+  height: 100%;
+  padding: 0 0 10px 80px;
+}
+
+.boton-catalogo {
+  text-decoration: none;
+  background-color: transparent;
+  color: #fcffff;
+  border: 2px solid #055d63;
+  padding: 5px 36px;
+  font-family: "Orbitron", sans-serif;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  transition: 0.3s;
+}
+.boton-catalogo:hover {
+  background-color: #055d63;
+  color: #0f0f0f;
+}
+
+/* ===== LOGIN ===== */
+.contenedor-login {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 80vh;
+  padding: 40px 20px;
+}
+
+.contenedor-login h1 {
+  font-family: "Orbitron", sans-serif;
+  color: #006e09;
+  margin-bottom: 30px;
+  text-transform: uppercase;
+}
+
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  max-width: 400px;
+  background-color: #111111;
+  padding: 40px;
+  border: 1px solid #006e09;
+}
+
+.grupo-input {
+  color: #cccccc;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.grupo-input label {
+  color: #cccccc;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.grupo-input input {
+  background-color: rgba(46, 44, 44, 0.975);
+  border-color: #006e09;
+  border: 1px solid ;
+  padding: 12px;
+  font-family: "Rajdhani", sans-serif;
+  font-size: 1rem;
+  outline: none;
+  transition: 0.3s;
+}
+
+.grupo-input input:focus {
+  border-color: #006e09;
+}
+
+.btn-submit {
+  background-color: #006e09;
+  color: #000000;
+  border: none;
+  padding: 14px;
+  font-family: "Orbitron", sans-serif;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.btn-submit:hover {
+  background-color: #000000;
+  color: #006e09;
+  border: 1px solid #006e09;
+}
+
+.link-registro {
+  margin-top: 20px;
+  color: #cccccc;
+}
+
+.link-registro a {
+  color: #006e09;
+  text-decoration: none;
+}
+
+.link-registro a:hover {
+  text-decoration: underline;
+}
+
+/* ===== ALERTAS ===== */
+.alerta {
+  width: 100%;
+  max-width: 400px;
+  padding: 12px 20px;
+  margin-bottom: 20px;
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 0.875rem;
+}
+
+.alerta-exito {
+  background-color: #003300;
+  border: 1px solid #006e09;
+  color: #006e09;
+}
+
+.alerta-error {
+  background-color: #330000;
+  border: 1px solid #ff0000;
+  color: #ff0000;
+}
+
+
+/* ===== ADMIN ===== */
+.contenedor-admin {
+  padding: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.contenedor-admin h1 {
+  font-family: "Orbitron", sans-serif;
+  color: #006e09;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.contenedor-admin h2 {
+  color: #cccccc;
+  text-transform: uppercase;
+  margin-bottom: 30px;
+  font-size: 1rem;
+  letter-spacing: 2px;
+}
+
+.seccion-admin {
+  margin-bottom: 60px;
+}
+
+/* ===== TABLA ADMIN ===== */
+.tabla-admin {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tabla-admin th {
+  background-color: #006e09;
+  color: #000000;
+  padding: 12px 16px;
+  text-align: left;
+  font-family: "Orbitron", sans-serif;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+}
+
+.tabla-admin td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #222222;
+  color: #cccccc;
+  vertical-align: middle;
+}
+
+.tabla-admin tr:hover td {
+  background-color: #111111;
+}
+
+.img-tabla {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+}
+
+.btn-eliminar {
+  background-color: transparent;
+  color: #ff0000;
+  border: 1px solid #ff0000;
+  padding: 6px 12px;
+  text-decoration: none;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  transition: 0.3s;
+}
+
+.btn-eliminar:hover {
+  background-color: #ff0000;
+  color: #000000;
+}
+
+/* ===== NAV ADMIN ===== */
+.nav-admin {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.nav-admin span {
+  color: #cccccc;
+  font-size: 0.875rem;
+}
+
+.btn-logout {
+  text-decoration: none;
+  color: #000000;
+  background-color: #006e09;
+  padding: 8px 16px;
+  font-family: "Orbitron", sans-serif;
+  font-size: 0.75rem;
+  transition: 0.3s;
+}
+
+
+.btn-logout:hover {
+  background-color: #000000;
+  color: #006e09;
+  border: 1px solid #006e09;
+}
+
+/* ===== TEXTAREA ===== */
+.grupo-input textarea {
+  background-color: #1a1a1a;
+  border: 1px solid #333333;
+  color: #ffffff;
+  padding: 12px;
+  font-family: "Rajdhani", sans-serif;
+  font-size: 1rem;
+  outline: none;
+  transition: 0.3s;
+  resize: vertical;
+  min-height: 100px;
+}
+
+.grupo-input textarea:focus {
+  border-color: #006e09;
+}
+
+/* ===== SELECT ===== */
+.grupo-input select {
+  background-color: #1a1a1a;
+  border: 1px solid #333333;
+  color: #ffffff;
+  padding: 12px;
+  font-family: "Rajdhani", sans-serif;
+  font-size: 1rem;
+  outline: none;
+  transition: 0.3s;
+  cursor: pointer;
+}
+
+.grupo-input select:focus {
+  border-color: #006e09;
+}
+
+/*menu accesibilidad
+/* Botones con estilo Gamer */
+.accesibilidad-menu {
+    position: fixed !important; /*important prioriza la regla*/
+    right: 0 !important;   
+    left: auto !important;    
+    bottom: 120px !important;    
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.8);
+    border: 1px solid #00f2ff;
+    border-right: none;          
+    border-radius: 10px 0 0 10px; 
+    z-index: 100000 !important; 
+}
+
+/* Estilo de los botones */
+.accesibilidad-menu button {
+    width: 40px;
+    height: 40px;
+    background: #111;
+    color: #00f2ff;
+    border: 1px solid #00f2ff;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.accesibilidad-menu button:hover {
+    background: #00f2ff;
+    color: #000;
+    box-shadow: 0 0 15px #00f2ff;
+}
+
+.alto-contraste {
+    filter: contrast(150%) grayscale(100%);
+    background: black !important;
+    color: yellow !important
+
+}
+
+/* Integración con el menú de accesibilidad */
+body.alto-contraste .footer-info {
+    background-color: #000000 !important;
+    color: #ffff00 !important;
+    border-top: 2px solid #ffff00;
+}
+
+body.alto-contraste .footer-info *,
+body.alto-contraste .politicas a,
+body.alto-contraste .politicas h4,
+body.alto-contraste .notas-importantes p strong {
+    color: #ffff00 !important;
+}
+
+/*Boton Whatsapp*/
+.btn-whatsapp {
+    position: fixed;
+    bottom: 20px;
+    right: 10px;
+    width: 60px;
+    height: 60px;
+    z-index: 9999;
+}
+
+.btn-whatsapp img {
+    width: 100%;
+    transition: 0.3s;
+}
+
+.btn-whatsapp:hover {
+    transform: scale(1.1);
+}
+
+/*Footer*/
+.footer-info {
+    background-color: #0d0d0d;
+    color: #ffffff;
+    padding: 50px 10%;
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    border-top: 2px solid #00f2ff;
+    box-shadow: 0 -5px 15px rgba(0, 242, 255, 0.1);
+}
+
+.contacto-detalles p {
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+}
+
+.notas-importantes p strong {
+  color: #00f2ff;
+}
+
+.notas-importantes {
+    margin: 30px 0;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    border-left: 3px solid #00f2ff;
+    padding-left: 15px;
+}
+
+.politicas h4 {
+    margin-bottom: 5px;
+    color: #00f2ff;
+}
+
+.politicas a {
+    color: #00f2ff;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.politicas a:hover {
+  color: #00f2ff;
+  text-decoration: none;
+  transition: 0.3s;
+}
+
+.metodos-pago-footer {
+    border-top: 1px solid #222222;
+    margin-top: 40px;
+    padding-top: 20px;
+    text-align: center;
+}
+
+.metodos-pago-footer span {
+    font-size: 0.7rem;
+    color: #666;
+    letter-spacing: 2px;
+}
+
+.logos-pago {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 15px;
+    flex-wrap: wrap;
+}
+
+.logos-pago img {
+  height: 30px;
+  filter: brightness(0) invert(1);
+  opacity: 0.7;
+  transition: 0.3s;
+}
+
+.logos-pago img:hover {
+    opacity: 1;
+    filter: none; 
+}
+
+/* 1. Candado de seguridad para que nada en la web desborde hacia los lados */
+html, body {
+    overflow-x: hidden;
+    width: 100%;
+}
+
+/* 2. Asegurar que la cuadrícula de productos no se estire más allá de la pantalla */
+.grid-productos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    width: 100%;
+    max-width: 1200px; 
+    margin: 0 auto;
+    padding: 20px;
+    box-sizing: border-box; 
+}
+
+/* 1. Ajustes a la Tarjeta del Producto */
+.tarjeta-producto {
+    background: rgba(10, 10, 15, 0.85);
+    border: 2px solid #00ffcc; /* Verde neón característico */
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 0 15px rgba(0, 255, 204, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.tarjeta-producto:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0 25px rgba(0, 255, 204, 0.5), 0 0 10px #ff007f; /* Doble neón en hover */
+}
+
+/* 2. SOLUCIÓN A LA IMAGEN: Para que se vea COMPLETA sin recortarse */
+.imagen-producto {
+    width: 100%;
+    height: 320px; /* Le damos buena altura para consolas o cajas */
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+    border-bottom: 1px solid rgba(3, 83, 20, 0.3); /* Línea divisoria rosa */
+}
+
+.imagen-producto img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; 
+}
+
+/* 3. Estilos del Bloque de Información */
+.info-producto {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+/* Título estilo Cyberpunk (Orbitron) */
+.info-producto h3 {
+    font-family: 'Orbitron', sans-serif;
+    color: #ffffff;
+    font-size: 1.5rem;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    letter-spacing: 1px;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+}
+
+/* Descripción del Juego/Consola (Rajdhani) */
+.info-producto .descripcion-corta {
+    font-family: 'Rajdhani', sans-serif;
+    color: #b3b3b3;
+    font-size: 1rem;
+    line-height: 1.5;
+    margin-bottom: 15px;
+    font-weight: 500;
+}
+
+/* Precio con resalte Neón */
+.info-producto .precio {
+    font-family: 'Orbitron', sans-serif;
+    color: #00ffcc;
+    font-size: 1.6rem;
+    font-weight: 900;
+    margin-top: auto; /* Empuja el precio y el botón al fondo si las tarjetas varían de tamaño */
+    margin-bottom: 15px;
+    text-shadow: 0 0 10px rgba(0, 255, 204, 0.6);
+}
+
+/* 4. Botón Agregar al Carrito a juego con la tienda */
+.btn-agregar-carrito {
+    width: 100%;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 1.1rem;
+    letter-spacing: 1px;
+    background: transparent;
+    border: 2px solid #006e09; /* Rosa neón */
+    color: #006e09;
+    padding: 12px;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.btn-agregar-carrito i {
+    font-size: 0.95rem;
+}
+
+.btn-agregar-carrito:hover {
+    background: #00ccff;
+    color: #ffffff;
+    box-shadow: 0 0 15px #006e09;
+}

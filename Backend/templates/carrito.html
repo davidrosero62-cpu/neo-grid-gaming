@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Tu Carrito - Neo Grid Gaming</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="logo">
+                <a href="{{ url_for('index') }}" class="logo-link">
+                    <img src="{{ url_for('static', filename='img/logo.svg') }}" alt="Neo Grid Gaming" class="img-logo" />
+                </a>
+            </div>
+            <a href="{{ url_for('index') }}" class="btn-panel-nav"><i class="fas fa-arrow-left"></i> Volver a la Tienda</a>
+        </nav>
+    </header>
+
+    <!-- Contenedor de alertas controlado -->
+      <div class="contenedor-alertas" style="max-width: 1200px; margin: 20px auto; padding: 0 20px;">
+        {% with messages = get_flashed_messages(with_categories=true) %} 
+          {% if messages %} 
+            {% for category, message in messages %}
+              <div class="alerta alerta-{{ category }}" style="background: rgba(0, 0, 0, 0.8); border: 1px solid #006e09; color: #fff; padding: 15px; margin-bottom: 10px; font-family: 'Rajdhani', sans-serif; text-transform: uppercase; box-shadow: 0 0 10px #006e09;">
+                <i class="fas fa-info-circle" style="color: #00ffcc; margin-right: 10px;"></i>
+                {{ message }}
+              </div>
+            {% endfor %} 
+          {% endif %} 
+        {% endwith %}
+      </div>
+
+    <main class="contenedor-formulario" style="max-width: 900px; margin: 40px auto; padding: 20px;">
+        <h1 style="font-family: 'Orbitron', sans-serif; color: #00ffcc; text-transform: uppercase; margin-bottom: 20px;">
+            <i class="fas fa-shopping-cart"></i> Tu Carrito de Compras
+        </h1>
+
+        <!-- 1. Abrimos la validación del carrito -->
+        {% if carrito and carrito|length > 0 %}
+            <table class="tabla-admin" style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                <thead>
+                    <tr style="background-color: #111; color: #fff;">
+                        <th style="padding: 12px; text-align: left;">Producto</th>
+                        <th style="padding: 12px; text-align: center;">Cantidad</th>
+                        <th style="padding: 12px; text-align: right;">Precio Unitario</th>
+                        <th style="padding: 12px; text-align: right;">Subtotal</th>
+                        <th style="padding: 12px; text-align: center;">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- 2. Ciclo para pintar los juegos -->
+                    {% for item in carrito %}
+                    <tr style="border-bottom: 1px solid #333;">
+                        <td style="padding: 12px; color: #fff;">{{ item['nombre'] }}</td>
+                        <td style="padding: 12px; text-align: center; color: #fff;">{{ item['cantidad'] }}</td>
+                        <td style="padding: 12px; text-align: right; color: #00ffcc;">${{ "{:,.0f}".format(item['precio']) }}</td>
+                        <td style="padding: 12px; text-align: right; color: #00ffcc;">${{ "{:,.0f}".format(item['precio'] * item['cantidad']) }}</td>
+                        
+                        <!-- El botón de eliminar bien ubicado -->
+                        <td style="padding: 12px; text-align: center;">
+                            <form action="{{ url_for('eliminar_del_carrito') }}" method="POST" style="display: inline;">
+                                <input type="hidden" name="id_producto" value="{{ item['id_producto'] }}">
+                                <button type="submit" style="background: none; border: none; color: #ff007f; cursor: pointer; font-size: 1.1rem;" title="Eliminar producto">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %} <!-- Cerramos el ciclo de los productos primero -->
+                </tbody>
+            </table>
+
+            <div style="text-align: right; margin-top: 20px;">
+                <button class="btn-submit" style="background: #ff007f; max-width: 250px;">
+                    <i class="fas fa-credit-card"></i> Proceder al Pago
+                </button>
+            </div>
+            
+        <!-- 3. AQUÍ está el else que se había roto, ahora sí tiene sentido para Jinja -->
+        {% else %}
+            <div style="text-align: center; padding: 40px; background: rgba(0,0,0,0.5); border-radius: 8px;">
+                <p style="color: #888; font-size: 1.2rem;">Tu carrito está vacío.</p>
+                <a href="{{ url_for('index') }}" class="btn-submit" style="display: inline-block; margin-top: 20px; max-width: 200px; text-decoration: none; text-align:center;">Ir a comprar</a>
+            </div>
+        {% endif %} <!-- Y cerramos la condición al puro final -->
+    </main>
+</body>
+</html>

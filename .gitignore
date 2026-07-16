@@ -1,16 +1,25 @@
-# Variables de entorno
-.env
+# ==========================================
+# BACKEND (Python / Flask)
+# ==========================================
+Backend/.env
+Backend/__pycache__/
+Backend/*.pyc
+Backend/*.pyo
+Backend/venv/
+Backend/env/
 
-# Python
-__pycache__/
-*.pyc
-*.pyo
+# ==========================================
+# FRONTEND (React / Vite)
+# ==========================================
+Frontend/node_modules/
+Frontend/dist/
+Frontend/.env.local
+Frontend/.env.*.local
 
-# Entorno virtual
-venv/
-env/
-
-# Archivos del sistema
+# ==========================================
+# ARCHIVOS DEL SISTEMA Y EDITORES
+# ==========================================
 .DS_Store
 Thumbs.db
 .vscode/
+.idea/
