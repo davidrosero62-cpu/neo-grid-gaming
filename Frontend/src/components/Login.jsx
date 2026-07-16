@@ -56,13 +56,13 @@ function Login () {
                 localStorage.setItem("rol", data.rol);
 
                 if (data.rol === "admin") {
-                    navigate("/admin");
+                    navigate("/admin", {state: { mensajeExito: "¡Bienvenido al panel de administración!"}});
                 } else {
-                    navigate("/");
+                    navigate("/", {state: {mensajeExito: "¡Bienvenido a Neo Grid!"}});
                 }
             } else {
                 // Si el login falla, mostramos el error del Backend en la alerta
-                setAlertas([{ texto: data.error || "Credenciales Incorrectos"}]);
+                setAlertas([{ texto: "Hubo un error al iniciar sesión"}])
             }
         } catch (error) {
             setAlertas([{ texto: "Hubo un error de conexión con el servidor"}]);

@@ -62,7 +62,7 @@ try {
                         <label>Nombre de Usuario</label>
                         <input
                             type="text"
-                            name="nombre" /*OJO al conectar con el Backend*/
+                            name="nombre" 
                             placeholder="Ej: MasterChief117"
                             value={formData.nombre}
                             onChange={handleChange}

@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import Alertas from "./Alertas";
 
 /**
  * Componente de adminstracion (CRUD) para la gesion del invebtariio.
@@ -26,6 +27,22 @@ import { useNavigate } from "react-router-dom";
 
 const Admin = () => {
     const navigate = useNavigate();
+       const location = useLocation(); // Hook para leer el estado enviado desde Register
+   
+       // Estado para controlar las alertas locales del login
+       const[alertas, setAlertas] = useState([]);
+   
+       // Efecto para verificar si venimos desde el registro con un mensaje de exito
+       useEffect(() => {
+           if (location.state && location.state.mensajeExito) {
+               // Guardamos el mensaje en el formato que espera el componente Alertas ([{ texto "..."}])
+               setAlertas([{ texto: location.state.mensajeExito }]);
+   
+               //Limpiamos el historial de navegacion para que si el usuario recarga la pagina,
+               // el mensaje de registro exitoso desaparezca
+               window.history.replaceState({}, document.title);
+           }
+       }, [location]);
 
     // --- ESTADOS ---
     const [formData, setFormData] = useState({
@@ -161,6 +178,11 @@ const Admin = () => {
     };
 
     return (
+        
+         <div className="contenedor-login-vista">
+            {/* 4. Renderizamos dinámicamente tu componente de Alertas cyberpunk si existen mensajes */}
+            {alertas.length > 0 && <Alertas mensajes={alertas} />}
+
         <main className="contenedor-admin">
             <section className="seccion-admin">
                 <h1>Panel de Administración</h1>
@@ -301,6 +323,7 @@ const Admin = () => {
                 </div>
             </section>
         </main>
+    </div>
     );
 };
 
