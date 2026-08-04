@@ -1,102 +1,323 @@
-**Neo Grid Gaming** es una plataforma de comercio electrónico orientada al sector gamer, estructurada bajo una arquitectura desacoplada que separa de manera estricta las capas de presentación y lógica de negocio. El proyecto cuenta con un catálogo dinámico orientado al usuario final, un sistema robusto de autenticación basado en tokens, herramientas de accesibilidad nativas y un panel administrativo completo (CRUD) para la gestión física del inventario multimedia.
+# 🎮 Neo Grid Gaming
+
+**Neo Grid Gaming** es una plataforma de comercio electrónico orientada al sector gamer, desarrollada bajo una **arquitectura desacoplada** que separa la capa de presentación de la lógica de negocio mediante una API REST.
+
+Actualmente el proyecto está compuesto por un **frontend desarrollado en React**, un **backend desarrollado en Flask** y una **base de datos MySQL**, permitiendo una arquitectura escalable y preparada para la integración con múltiples clientes, como aplicaciones web y móviles.
 
 ---
 
-## 🛠️ Arquitectura y Tecnologías Clave
+## 📌 Características
 
-### Backend (API REST)
-*   **Core:** Python 3 + Flask (Estructuración modular de endpoints de consumo exclusivo JSON).
-*   **Seguridad:** 
-    *   **Autenticación:** Implementación de **JSON Web Tokens (JWT)** con algoritmo de firma `HS256` y expiración automatizada a 24 horas.
-    *   **Rate Limiting:** Control de flujo mediante `Flask-Limiter` en rutas críticas (`/api/register`) restringido a un máximo de 3 peticiones por minuto por IP para evitar ataques de fuerza bruta o de denegación de servicio (DoS).
-    *   **Cifrado de Contraseñas:** Hashing criptográfico mediante funciones seguras de derivación de claves (`werkzeug.security`).
-    *   **Sanitización de Archivos:** Implementación de `secure_filename` y listas blancas explícitas para mitigar vulnerabilidades de Path Traversal o ejecución remota de comandos en la carga de archivos multimedia.
-*   **Base de Datos:** MySQL integrado mediante el conector nativo relacional `mysql.connector`.
-*   **CORS:** Habilitación de políticas de intercambio de recursos de origen cruzado (`Flask-CORS`) para permitir la comunicación fluida con clientes SPA (Single Page Applications).
-
-### Frontend (SPA)
-*   **Core:** React + JavaScript estructurado en componentes modulares, funcionales y altamente reutilizables[cite: 2, 3, 4, 5].
-*   **Enrutamiento:** `react-router-dom` para la gestión interna de rutas del lado del cliente, previniendo recargas completas del navegador y optimizando la experiencia de usuario[cite: 2, 7, 8].
-*   **Gestión de Estado:** Manejo de estados locales (`useState`) y efectos secundarios (`useEffect`) para sincronizar consumos asíncronos distribuidos a la API (`fetch`)[cite: 2, 9].
-*   **Accesibilidad (A11y):** Incorporación de un menú nativo para el control dinámico del tamaño de fuente en toda la aplicación y switch de contraste para cumplimiento básico de accesibilidad visual[cite: 8].
+- 🔐 Autenticación segura mediante JSON Web Tokens (JWT).
+- 🛒 Catálogo dinámico de productos.
+- 🧑‍💼 Panel administrativo con operaciones CRUD.
+- 🗂️ Gestión de categorías.
+- 🌐 API REST desacoplada.
+- ♿ Funciones básicas de accesibilidad.
+- 🔒 Protección mediante Rate Limiting y sanitización de archivos.
+- 🖼️ Carga segura de imágenes.
+- 📱 Arquitectura preparada para clientes web y móviles.
 
 ---
 
-## 📐 Diseño de la Base de Datos (Esquema Relacional)
+# 🏗️ Arquitectura del Sistema
 
-La base de datos se rige por la consistencia transaccional y relaciones estrictas:
-
-*   **`usuario`**: Almacena credenciales, datos de identidad y roles de acceso (`'admin'`, `'cliente'`)[cite: 1].
-*   **`categoria`**: Clasificación jerárquica para la indexación de los artículos[cite: 1].
-*   **`producto`**: Catálogo físico de la tienda. Mantiene una llave foránea (`categoria_id_categoria`) apuntando hacia la entidad `categoria` (`1:N`)[cite: 1].
+```text
+┌────────────────────┐
+│    React (SPA)     │
+└─────────┬──────────┘
+          │
+      Fetch API
+          │
+┌─────────▼──────────┐
+│   Flask REST API   │
+└─────────┬──────────┘
+          │
+    mysql.connector
+          │
+┌─────────▼──────────┐
+│       MySQL        │
+└────────────────────┘
+```
 
 ---
 
-## 🚀 Instalación y Configuración Local
+# 🛠️ Stack Tecnológico
 
-### Prerrequisitos
-*   Python 3.10 o superior instalado.
-*   Node.js v18 o superior instalado.
-*   Servidor MySQL activo (Local o en la nube).
+| Capa | Tecnologías |
+|------|-------------|
+| **Frontend** | React, JavaScript, React Router DOM, Fetch API, pnpm |
+| **Backend** | Python 3, Flask, Flask-JWT-Extended, Flask-CORS, Flask-Limiter |
+| **Base de Datos** | MySQL |
+| **Control de Versiones** | Git, GitHub |
 
-### 1. Clonar el Repositorio e Instalar el Backend
+---
+
+# 🔒 Seguridad
+
+El proyecto implementa diversas medidas para proteger la aplicación y la información de los usuarios.
+
+- Autenticación mediante **JSON Web Tokens (JWT)**.
+- Firma de tokens utilizando el algoritmo **HS256**.
+- Expiración automática de tokens.
+- Hashing seguro de contraseñas mediante `werkzeug.security`.
+- Protección contra ataques de fuerza bruta mediante **Flask-Limiter**.
+- Sanitización de nombres de archivos utilizando `secure_filename`.
+- Validación mediante listas blancas para la carga de archivos.
+- Manejo seguro de errores evitando exponer información sensible del servidor.
+
+---
+
+# 🗄️ Diseño de la Base de Datos
+
+El sistema utiliza una base de datos relacional en **MySQL**.
+
+### Entidades principales
+
+### 👤 Usuario
+
+Almacena la información de autenticación y los roles del sistema.
+
+- id_usuario
+- nombre
+- correo
+- contraseña
+- rol (`admin` o `cliente`)
+
+---
+
+### 📂 Categoría
+
+Permite organizar los productos.
+
+- id_categoria
+- nombre_categoria
+
+---
+
+### 🎮 Producto
+
+Representa los artículos disponibles en la tienda.
+
+- id_producto
+- nombre
+- descripción
+- precio
+- stock
+- imagen
+- categoria_id_categoria
+
+Relación:
+
+```
+Categoria (1)
+      │
+      │
+      ▼
+Producto (N)
+```
+
+---
+
+# 🚀 Instalación
+
+## Requisitos
+
+- Python 3.10 o superior.
+- Node.js 18 o superior.
+- pnpm.
+- MySQL Server.
+
+---
+
+## 1. Clonar el repositorio
+
 ```bash
-# Clonar proyecto
-git clone [https://github.com/tu-usuario/neo-grid-gaming.git](https://github.com/tu-usuario/neo-grid-gaming.git)
-cd neo-grid-gaming/backend
+git clone https://github.com/davidrosero62-cpu/neo-grid-gaming.git
 
-# Crear un entorno virtual
+cd neo-grid-gaming
+```
+
+---
+
+## 2. Configurar el Backend
+
+```bash
+cd Backend
+
 python -m venv venv
-source venv/bin/activate  # En Windows: venv\Scripts\activate
+```
 
-# Instalar dependencias requeridas
+### Activar entorno virtual
+
+Windows
+
+```bash
+venv\Scripts\activate
+```
+
+Linux / macOS
+
+```bash
+source venv/bin/activate
+```
+
+Instalar dependencias
+
+```bash
 pip install -r requirements.txt
+```
 
-### 2. Configurar Variables de Entorno (.env)
-Crea un archivo llamado `.env` en la raíz de la carpeta `backend/` y configura tus credenciales de la siguiente manera:
+---
+
+## 3. Variables de entorno
+
+Crear un archivo llamado **.env** dentro de la carpeta **Backend/**
+
 ```env
 DB_HOST=localhost
-DB_USER=tu_usuario_mysql
-DB_PASSWORD=tu_contraseña_mysql
+DB_USER=root
+DB_PASSWORD=password
 DB_NAME=db_neo_grid_gaming
-SECRET_KEY=una_clave_secreta_muy_segura_para_jwt
+SECRET_KEY=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
-### 3. Instalar y Levantar el Frontend
+### Descripción
+
+| Variable | Descripción |
+|----------|-------------|
+| DB_HOST | Servidor MySQL |
+| DB_USER | Usuario de MySQL |
+| DB_PASSWORD | Contraseña de MySQL |
+| DB_NAME | Nombre de la base de datos |
+| SECRET_KEY | Clave para firmar los JWT |
+
+---
+
+## 4. Ejecutar el Backend
+
 ```bash
-# Navegar a la carpeta del frontend
-cd ../frontend
+python app.py
+```
 
-# Instalar las dependencias de Node.js
+El servidor estará disponible en
+
+```
+http://localhost:5000
+```
+
+---
+
+## 5. Configurar el Frontend
+
+```bash
+cd ../Frontend
+
 pnpm install
+```
 
-# Iniciar el servidor de desarrollo local
+---
+
+## 6. Ejecutar el Frontend
+
+```bash
 pnpm run dev
 ```
-El cliente React estará disponible en `http://localhost:5173`.
+
+La aplicación estará disponible en
+
+```
+http://localhost:5173
+```
 
 ---
 
-## 🚀 Especificación de la API (Endpoints REST)
+# 🌐 API REST
 
-Todas las peticiones de escritura y rutas protegidas requieren las cabeceras `Content-Type: application/json` y el token de autenticación según corresponda.
+Las rutas protegidas requieren un **JWT** válido enviado mediante el encabezado:
 
-### 🔐 Autenticación y Usuarios
-*   `POST /api/register` -> Registro de nuevos clientes. (Protegido con Rate Limiting: max 3 peticiones/min per IP).
-*   `POST /api/login` -> Autenticación de usuarios. Retorna un objeto JSON con el token JWT si las credenciales coinciden con el hash criptográfico.
+```http
+Authorization: Bearer <token>
+```
 
-### 🛒 Gestión del Catálogo (Público)
-*   `GET /api/products` -> Obtiene la lista completa de productos gamers indexados con su respectiva categoría.
-*   `GET /api/products/<id>` -> Retorna el detalle físico y multimedia de un producto específico.
+## Endpoints disponibles
 
-### 🛠️ Operaciones CRUD Administrativas (Protegidas)
-*Las siguientes rutas requieren el rol `'admin'` dentro del token JWT para ser ejecutadas:*
-*   `POST /api/products` -> Inserta un nuevo artículo gamer en el catálogo (Soporta carga de imágenes sanitizadas).
-*   `PUT /api/products/<id>` -> Actualiza de forma parcial o total la información del producto.
-*   `DELETE /api/products/<id>` -> Eliminación persistente del registro en MySQL.
+| Método | Endpoint | Descripción |
+|---------|----------|-------------|
+| POST | `/api/register` | Registrar un usuario |
+| POST | `/api/login` | Iniciar sesión y obtener un JWT |
+| GET | `/api/products` | Obtener todos los productos |
+| GET | `/api/products/{id}` | Obtener un producto específico |
+| POST | `/api/products` | Crear un producto (Administrador) |
+| PUT | `/api/products/{id}` | Actualizar un producto (Administrador) |
+| DELETE | `/api/products/{id}` | Eliminar un producto (Administrador) |
 
 ---
 
-## 🔒 Buenas Prácticas y Estándares Implementados
-*   **Manejo de Errores Limpio:** Las fallas del servidor (500) y de base de datos no exponen trazas internas (*stack traces*) al cliente; retornan mensajes genéricos sanitizados para mitigar fugas de información.
-*   **Separación de Conceptos:** Estricto desacoplamiento de capas; el frontend se comunica exclusivamente con la API mediante peticiones asíncronas (`fetch`).
+# 🚧 Estado del Proyecto
+
+Actualmente la plataforma web se encuentra completamente funcional.
+
+La aplicación móvil desarrollada en **Kotlin** consume la misma API REST mediante **Retrofit** y se encuentra en desarrollo.
+
+| Componente | Estado |
+|------------|--------|
+| Backend Flask | ✅ Finalizado |
+| API REST | ✅ Finalizado |
+| Frontend React | ✅ Finalizado |
+| CRUD Administrativo | ✅ Finalizado |
+| Autenticación JWT | ✅ Finalizado |
+| Gestión de Categorías | ✅ Finalizado |
+| Accesibilidad | ✅ Finalizado |
+| Aplicación Android (Kotlin + Retrofit) | 🚧 En desarrollo |
+
+---
+
+# 📌 Buenas Prácticas Implementadas
+
+- Arquitectura desacoplada entre frontend y backend.
+- API REST reutilizable.
+- Componentes reutilizables en React.
+- Manejo de estados mediante Hooks (`useState` y `useEffect`).
+- Separación de responsabilidades.
+- Manejo seguro de errores.
+- Protección mediante JWT.
+- Validación de archivos.
+- Rate Limiting.
+- Variables sensibles mediante `.env`.
+- Uso de Git para control de versiones.
+- Documentación técnica del proyecto.
+
+---
+
+# 📅 Roadmap
+
+- ✅ Backend Flask
+- ✅ API REST
+- ✅ CRUD de productos
+- ✅ CRUD de categorías
+- ✅ JWT
+- ✅ React SPA
+- ✅ Accesibilidad
+- ✅ Migración de npm a pnpm
+- 🚧 Aplicación Android (Kotlin + Retrofit)
+- ⏳ Carrito de compras móvil
+- ⏳ Panel administrativo móvil
+- ⏳ Despliegue en producción
+
+---
+
+# 👨‍💻 Autor
+
+**David Sebastián Rosero Manotas**
+
+**Tecnólogo en Análisis y Desarrollo de Software (ADSO) - SENA**
+
+GitHub:
+> https://github.com/davidrosero62-cpu
+
+---
+
+# 📄 Licencia
+
+Este proyecto fue desarrollado con fines educativos y como parte de mi portafolio profesional. Su objetivo es demostrar conocimientos en desarrollo Full Stack, arquitectura de software, APIs REST y buenas prácticas de desarrollo.
