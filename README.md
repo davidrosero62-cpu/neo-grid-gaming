@@ -68,10 +68,10 @@ SECRET_KEY=una_clave_secreta_muy_segura_para_jwt
 cd ../frontend
 
 # Instalar las dependencias de Node.js
-npm install
+pnpm install
 
 # Iniciar el servidor de desarrollo local
-npm run dev
+pnpm run dev
 ```
 El cliente React estará disponible en `http://localhost:5173`.
 
