@@ -58,7 +58,7 @@ Crea un archivo llamado `.env` en la raíz de la carpeta `backend/` y configura 
 DB_HOST=localhost
 DB_USER=tu_usuario_mysql
 DB_PASSWORD=tu_contraseña_mysql
-DB_NAME=neo_grid_gaming
+DB_NAME=db_neo_grid_gaming
 SECRET_KEY=una_clave_secreta_muy_segura_para_jwt
 ```
 
