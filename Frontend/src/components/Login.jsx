@@ -52,8 +52,8 @@ function Login () {
             const data = await response.json();
             if (response.ok) {
                 // Guardamos el rol y el token en la memoria del navegador
-                localStorage.setItem("token", data.token);
-                localStorage.setItem("rol", data.rol);
+                sessionStorage.setItem("token", data.token);
+                sessionStorage.setItem("rol", data.rol);
 
                 if (data.rol === "admin") {
                     navigate("/admin", {state: { mensajeExito: "¡Bienvenido al panel de administración!"}});

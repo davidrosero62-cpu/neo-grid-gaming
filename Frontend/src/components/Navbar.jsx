@@ -14,8 +14,8 @@ function Navbar() {
     const [altoContraste, setAltoContraste] = useState(false);
     
     // Estados dinámicos para la sesión
-    const [token, setToken] = useState(localStorage.getItem("token") || null);
-    const [usuarioRol, setUsuarioRol] = useState(localStorage.getItem("rol") || null);
+    const [token, setToken] = useState(sessionStorage.getItem("token") || null);
+    const [usuarioRol, setUsuarioRol] = useState(sessionStorage.getItem("rol") || null);
 
     // Efecto para la accesibilidad
     useEffect(() => {
@@ -25,15 +25,15 @@ function Navbar() {
 
     // Efecto para actualizar el Token y el Rol cada vez que el usuario cambie de página
     useEffect(() => {
-        setToken(localStorage.getItem("token"));
-        setUsuarioRol(localStorage.getItem("rol"));
+        setToken(sessionStorage.getItem("token"));
+        setUsuarioRol(sessionStorage.getItem("rol"));
     }, [location]);
 
     // --- LÓGICA DE CERRAR SESIÓN ---
     const handleLogout = () => {
         // 1. Borramos los datos de sesión del almacenamiento del navegador
-        localStorage.removeItem("token");
-        localStorage.removeItem("rol");
+        sessionStorage.removeItem("token");
+        sessionStorage.removeItem("rol");
 
         // 2. Limpiamos el estado de React inmediatamente para actualizar el Navbar
         setToken(null);

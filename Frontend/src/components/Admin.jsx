@@ -61,7 +61,7 @@ const Admin = () => {
 
     // 1. El Portero: Seguridad
     useEffect(() => {
-        const rolUsuario = localStorage.getItem("rol");
+        const rolUsuario = sessionStorage.getItem("rol");
         if (rolUsuario !== "admin") {
             alert("No tienes permisos para acceder a esta sección.");
             navigate("/login");
@@ -74,7 +74,7 @@ const Admin = () => {
         const cargarDatosIniciales = async () => {
             try {
                 // Sácamos el token que se guardó en el localStorage al iniciar sesión
-                const token = localStorage.getItem("token"); 
+                const token = sessionStorage.getItem("token"); 
 
                 const [resCat, resProd] = await Promise.all([
                     fetch('http://localhost:5000/api/categorias'),
@@ -128,7 +128,7 @@ const Admin = () => {
         try {
 
             // Recuperamos el token antes de la peticion
-            const token = localStorage.getItem("token");
+            const token = sessionStorage.getItem("token");
 
             const respuesta = await fetch('http://localhost:5000/api/productos', {
                 method: 'POST',
@@ -159,7 +159,7 @@ const Admin = () => {
             try {
 
                 // Recuperamos el token para autorizar el borrado
-                const token = localStorage.getItem("token");
+                const token = sessionStorage.getItem("token");
 
                 const respuesta = await fetch(`http://localhost:5000/api/productos/${id}`, {
                     method: 'DELETE',
