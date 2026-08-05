@@ -1,0 +1,102 @@
+-- ==============================================================================
+-- SCRIPT DE CREACIÓN DE TABLAS PARA POSTGRESQL (SUPABASE)
+-- Proyecto: Neo Grid Gaming
+-- Convertido desde dump MySQL (db_neo_grid_gaming, MySQL 8.0.45)
+-- ==============================================================================
+
+-- Orden de creación respetando dependencias de llaves foráneas:
+-- categoria, usuario -> producto, venta -> carrito, detalle_venta
+
+-- ------------------------------------------------------------------------------
+-- Tabla: categoria
+-- ------------------------------------------------------------------------------
+DROP TABLE IF EXISTS categoria CASCADE;
+CREATE TABLE categoria (
+    id_categoria     SERIAL PRIMARY KEY,
+    nombre_categoria VARCHAR(50) NOT NULL,
+    CONSTRAINT nombre_categoria_unique UNIQUE (nombre_categoria)
+);
+
+-- ------------------------------------------------------------------------------
+-- Tabla: usuario
+-- ------------------------------------------------------------------------------
+DROP TABLE IF EXISTS usuario CASCADE;
+CREATE TABLE usuario (
+    idusuario SERIAL PRIMARY KEY,
+    nombres   VARCHAR(100) NOT NULL,
+    correo    VARCHAR(150) NOT NULL,
+    password  VARCHAR(255) NOT NULL,
+    rol       VARCHAR(20) DEFAULT 'cliente',
+    CONSTRAINT correo_unique UNIQUE (correo)
+);
+
+-- ------------------------------------------------------------------------------
+-- Tabla: producto (depende de categoria)
+-- ------------------------------------------------------------------------------
+DROP TABLE IF EXISTS producto CASCADE;
+CREATE TABLE producto (
+    id_producto            SERIAL PRIMARY KEY,
+    nombre                 VARCHAR(50) NOT NULL,
+    precio                 NUMERIC(10,2) NOT NULL CHECK (precio >= 0),
+    stock                  INT NOT NULL CHECK (stock >= 0),
+    categoria_id_categoria INT NOT NULL,
+    descripcion            TEXT,
+    imagen                 VARCHAR(255) DEFAULT NULL,
+    CONSTRAINT fk_producto_categoria1 FOREIGN KEY (categoria_id_categoria)
+        REFERENCES categoria (id_categoria)
+);
+CREATE INDEX fk_producto_categoria1_idx ON producto (categoria_id_categoria);
+
+-- ------------------------------------------------------------------------------
+-- Tabla: venta (depende de usuario)
+-- ------------------------------------------------------------------------------
+DROP TABLE IF EXISTS venta CASCADE;
+CREATE TABLE venta (
+    id_venta          SERIAL PRIMARY KEY,
+    fecha             TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    total             NUMERIC(10,2) NOT NULL DEFAULT 0.00,
+    usuario_idusuario INT NOT NULL,
+    CONSTRAINT fk_venta_usuario FOREIGN KEY (usuario_idusuario)
+        REFERENCES usuario (idusuario)
+);
+CREATE INDEX fk_venta_usuario_idx ON venta (usuario_idusuario);
+
+-- ------------------------------------------------------------------------------
+-- Tabla: carrito (depende de usuario y producto)
+-- ------------------------------------------------------------------------------
+DROP TABLE IF EXISTS carrito CASCADE;
+CREATE TABLE carrito (
+    id_carrito     SERIAL PRIMARY KEY,
+    id_usuario     INT NOT NULL,
+    id_producto    INT NOT NULL,
+    cantidad       INT NOT NULL DEFAULT 1 CHECK (cantidad > 0),
+    fecha_agregado TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_usuario_carrito FOREIGN KEY (id_usuario)
+        REFERENCES usuario (idusuario) ON DELETE CASCADE,
+    CONSTRAINT fk_producto_carrito FOREIGN KEY (id_producto)
+        REFERENCES producto (id_producto) ON DELETE CASCADE
+);
+CREATE INDEX fk_usuario_carrito_idx ON carrito (id_usuario);
+CREATE INDEX fk_producto_carrito_idx ON carrito (id_producto);
+
+-- ------------------------------------------------------------------------------
+-- Tabla: detalle_venta (depende de venta y producto)
+-- ------------------------------------------------------------------------------
+DROP TABLE IF EXISTS detalle_venta CASCADE;
+CREATE TABLE detalle_venta (
+    id_detalle_venta     SERIAL PRIMARY KEY,
+    venta_id_venta        INT NOT NULL,
+    producto_id_producto  INT NOT NULL,
+    cantidad              INT NOT NULL CHECK (cantidad >= 0),
+    precio_unitario       NUMERIC(10,2) NOT NULL CHECK (precio_unitario >= 0),
+    CONSTRAINT fk_detalle_venta_venta1 FOREIGN KEY (venta_id_venta)
+        REFERENCES venta (id_venta),
+    CONSTRAINT fk_detalle_venta_producto1 FOREIGN KEY (producto_id_producto)
+        REFERENCES producto (id_producto)
+);
+CREATE INDEX fk_detalle_venta_venta1_idx ON detalle_venta (venta_id_venta);
+CREATE INDEX fk_detalle_venta_producto1_idx ON detalle_venta (producto_id_producto);
+
+-- ==============================================================================
+-- Fin del script
+-- ==============================================================================

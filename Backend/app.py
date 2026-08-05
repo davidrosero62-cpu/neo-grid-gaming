@@ -22,7 +22,8 @@ import datetime # Módulo para manejar tiempos de expiración de tokens
 from dotenv import load_dotenv
 
 # mysql.connector: Controlador oficial para conectar con MySQL.
-import mysql.connector
+import psycopg2
+from psycopg2.extras import RealDictCursor
 import os
 
 # Importamos la librería flask-limiter para evitar ataques de fuerza bruta
@@ -44,7 +45,8 @@ CORS(app) # Permite que tu frontend de React (puerto 5173 / 3000) se comunique c
 limiter = Limiter(
     app=app,
     key_func=get_remote_address,
-    default_limits=[] # Sin límites globales, solo específicos por ruta
+    default_limits=[], # Sin límites globales, solo específicos por ruta (para desarrollo)
+    storage_uri=os.getenv("REDIS_URL", "memory://")
 )
 
 # Clave secreta para firmar los JWTs
@@ -60,17 +62,18 @@ EXTENSIONES_PERMITIDAS = {"jpg", "jpeg", "png", "gif", "webp"}
 # BLOQUE 3: FUNCIÓN AUXILIAR DE CONEXIÓN A LA BASE DE DATOS
 # ------------------------------------------------------------------------------
 def obtener_conexion():
-    """
-    Establece y retorna un puente de comunicación con el servidor MySQL.
-    """
-    conn = mysql.connector.connect(
-        host=os.getenv("DB_HOST"),
-        user=os.getenv("DB_USER"),
-        password=os.getenv("DB_PASSWORD"),
-        database=os.getenv("DB_NAME"),
-        port=os.getenv("DB_PORT", 3306),
-    )
-    return conn
+    try:
+        conexion = psycopg2.connect(
+            host=os.getenv("DB_HOST"),
+            database=os.getenv("DB_NAME"),
+            user=os.getenv("DB_USER"),
+            password=os.getenv("DB_PASSWORD"),
+            port=os.getenv("DB_PORT", "5432"),
+        )
+        return conexion
+    except psycopg2.Error as err:
+        print(f"Error detallado de conexión: {err}")
+        raise err
 
 # ------------------------------------------------------------------------------
 # BLOQUE 4: FUNCIONES AUXILIARES DE SEGURIDAD
@@ -122,7 +125,8 @@ def login():
 
     try:
         conexion = obtener_conexion()
-        cursor = conexion.cursor(dictionary=True)
+        # Usamos RealDictCursor para obtener diccionarios.
+        cursor = conexion.cursor(cursor_factory=RealDictCursor)
         
         cursor.execute("SELECT idusuario, password, rol FROM usuario WHERE correo = %s", (correo,))
         usuario = cursor.fetchone()
@@ -147,7 +151,7 @@ def login():
         else:
             return jsonify({"error": "Correo o contraseña incorrectos"}), 401
 
-    except mysql.connector.Error as err:
+    except psycopg2.Error as err:
         return jsonify({"error": f"Error en la base de datos: {err}"}), 500
 
 
@@ -184,7 +188,7 @@ def register():
             "mensaje": "Si el correo no estaba registrado, tu cuenta ha sido creada."
         }), 201
         
-    except mysql.connector.Error:
+    except psycopg2.Error:
         # Error / Correo ya existente
         return jsonify({
             "status": "success",
@@ -194,7 +198,7 @@ def register():
     finally:
         if 'cursor' in locals() and cursor is not None:
             cursor.close()
-        if 'conexion' in locals() and conexion.is_connected():
+        if 'conexion' in locals() and conexion is not None:
             conexion.close()
 
 # ------------------------------------------------------------------------------
@@ -208,7 +212,7 @@ def index():
     """
     try:
         conexion = obtener_conexion()
-        cursor = conexion.cursor(dictionary=True)
+        cursor = conexion.cursor(cursor_factory=RealDictCursor)
         
         cursor.execute("SELECT * FROM producto")
         productos = cursor.fetchall()
@@ -216,7 +220,7 @@ def index():
         cursor.close()
         conexion.close()
         return jsonify(productos)
-    except mysql.connector.Error as err:
+    except psycopg2.Error as err:
         return jsonify({"error": f"Error al conectar con la base de datos: {err}"}), 500
 
 # ------------------------------------------------------------------------------
@@ -230,7 +234,7 @@ def api_categorias():
     """
     try:
         conexion = obtener_conexion()
-        cursor = conexion.cursor(dictionary=True)
+        cursor = conexion.cursor(cursor_factory=RealDictCursor)
 
         cursor.execute("SELECT id_categoria, nombre_categoria FROM categoria")
         categorias = cursor.fetchall()
@@ -238,7 +242,7 @@ def api_categorias():
         cursor.close()
         conexion.close()
         return jsonify(categorias), 200
-    except mysql.connector.Error as err:
+    except psycopg2.Error as err:
         return jsonify({"error": f"Error al consultar categorias: {err}"}), 500
 
 
@@ -253,7 +257,7 @@ def api_productos():
     
     try:
         conexion = obtener_conexion()
-        cursor = conexion.cursor(dictionary=True)
+        cursor = conexion.cursor(cursor_factory=RealDictCursor)
 
         consulta_sql = """
             SELECT
@@ -275,7 +279,7 @@ def api_productos():
         cursor.close()
         conexion.close()
         return jsonify(productos), 200
-    except mysql.connector.Error as err:
+    except psycopg2.Error as err:
         return jsonify({"error": f"Error al consultar productos: {err}"}), 500
 
 # ------------------------------------------------------------------------------
@@ -322,7 +326,7 @@ def api_agregar_producto():
         conexion.close()
 
         return jsonify({"mensaje": "Producto guardado correctamente"}), 201
-    except mysql.connector.Error as err:
+    except psycopg2.Error as err:
         return jsonify({"error": f"Error al agregar producto: {err}"}), 500        
 
 
@@ -344,7 +348,7 @@ def api_eliminar_producto(id):
         conexion.close()
 
         return jsonify({"mensaje": "Producto eliminado"}), 200
-    except mysql.connector.Error as err:
+    except psycopg2.Error as err:
         return jsonify({"error": f"Error al eliminar producto: {err}"}), 500
 
 # ------------------------------------------------------------------------------
