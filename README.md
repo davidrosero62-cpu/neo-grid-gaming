@@ -318,6 +318,21 @@ GitHub:
 
 ---
 
+## 🌿 Estrategia de ramas
+
+El proyecto utiliza diferentes ramas según el propósito del desarrollo:
+
+- `main`: versión estable del proyecto utilizada como base académica y
+  para las evidencias de formación.
+- `deploy/production`: rama destinada a la preparación, configuración
+  y evolución del proyecto para su despliegue en producción.
+
+Los cambios relacionados con el entorno de producción se desarrollan
+inicialmente en `deploy/production`, manteniendo `main` estable durante
+el proceso de formación.
+
+---
+
 # 📄 Licencia
 
 Este proyecto fue desarrollado con fines educativos y como parte de mi portafolio profesional. Su objetivo es demostrar conocimientos en desarrollo Full Stack, arquitectura de software, APIs REST y buenas prácticas de desarrollo.
