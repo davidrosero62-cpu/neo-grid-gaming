@@ -77,8 +77,8 @@ const Admin = () => {
                 const token = sessionStorage.getItem("token"); 
 
                 const [resCat, resProd] = await Promise.all([
-                    fetch('http://localhost:5000/api/categorias'),
-                    fetch('http://localhost:5000/api/productos', {
+                    fetch(`${API_URL}/api/categorias`),
+                    fetch(`${API_URL}/api/productos`, {
                         headers: {
                             // Le enviamos la llave de administrador en los headers
                             'Authorization': `Bearer ${token}` 
@@ -130,11 +130,11 @@ const Admin = () => {
             // Recuperamos el token antes de la peticion
             const token = sessionStorage.getItem("token");
 
-            const respuesta = await fetch('http://localhost:5000/api/productos', {
+            const respuesta = await fetch(`${API_URL}/api/productos`, {
                 method: 'POST',
                 headers: {
                 // Enviamos el token
-                'Authorization': `Bearer ${token}`
+                "Authorization": `Bearer ${token}`
                 },
                 body: data // No se pone headers de Content-Type cuando es FormData, el navegador lo hace solo
             });
@@ -161,7 +161,7 @@ const Admin = () => {
                 // Recuperamos el token para autorizar el borrado
                 const token = sessionStorage.getItem("token");
 
-                const respuesta = await fetch(`http://localhost:5000/api/productos/${id}`, {
+                const respuesta = await fetch(`${API_URL}/api/productos/${id}`, {
                     method: 'DELETE',
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -294,7 +294,7 @@ const Admin = () => {
                                 <tr key={producto.id_producto}>
                                     <td>
                                         <img
-                                            src={`http://localhost:5000/static/img/productos/${producto.imagen}`}
+                                            src={`${API_URL}/static/img/productos/${producto.imagen}`}
                                             alt={producto.nombre}
                                             className="img-tabla"
                                             style={{ width: '50px', height: '50px', objectFit: 'cover' }}

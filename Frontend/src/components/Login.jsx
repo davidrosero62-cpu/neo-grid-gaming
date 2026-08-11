@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import Alertas from "./Alertas";
+import { loginUsuario } from "../../services/api";
 
 /**
  * @description Componente que renderiza el formulario de inicio de sesion de la aplicacion
@@ -40,17 +41,11 @@ function Login () {
         e.preventDefault();
 
         try {
-            const response = await fetch("http://localhost:5000/api/login", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify ({
-                    correo: formData.email,
-                    password: formData.password
-                })
+            //Llamamos al servicio que centraliza la petición
+            const data = await loginUsuario({
+                correo: formData.email,
+                password: formData.password
             });
-
-            const data = await response.json();
-            if (response.ok) {
                 // Guardamos el rol y el token en la memoria del navegador
                 sessionStorage.setItem("token", data.token);
                 sessionStorage.setItem("rol", data.rol);
@@ -59,15 +54,13 @@ function Login () {
                     navigate("/admin", {state: { mensajeExito: "¡Bienvenido al panel de administración!"}});
                 } else {
                     navigate("/", {state: {mensajeExito: "¡Bienvenido a Neo Grid!"}});
-                }
-            } else {
-                // Si el login falla, mostramos el error del Backend en la alerta
-                setAlertas([{ texto: "Hubo un error al iniciar sesión"}])
-            }
+                
+                } 
+
         } catch (error) {
             setAlertas([{ texto: "Hubo un error de conexión con el servidor"}]);
         }
-    }
+    };
 
    return (
         <div className="contenedor-login-vista">

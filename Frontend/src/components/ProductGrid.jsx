@@ -1,4 +1,5 @@
 import React, {useState, useEffect} from "react";
+import { obtenerProductos } from "../../services/api";
 
 /**
  * @component ProductGrid
@@ -11,12 +12,14 @@ function ProductGrid () {
     // Memoria interna para guardar la lista de productos.
     const [productos, setProductos] = useState([]);
 
+    // Obtenemos la URL base desde las variables de entorno de Vite o usamos localhost por defecto
+    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
     // Efecto para cargar los productos automaticamente al montar el componente.
     useEffect(() => {
-        fetch('http://localhost:5000/')
-        .then(response => response.json())
+        obtenerProductos()
         .then(data => setProductos(data))
-        .catch(error => console.error('Error al traer los productos: ', error));
+        .catch(error => console.error(error));
     }, []);
 
     return (
@@ -29,7 +32,7 @@ function ProductGrid () {
                         <div key={producto.id_producto} className="tarjeta-producto">
                             <div className="imagen-producto">
                                 <img
-                                    src={`http://localhost:5000/static/img/productos/${producto.imagen}`}
+                                    src={`${API_URL}/static/img/productos/${producto.imagen}`}
                                     alt={producto.nombre}
                                 />
                             </div>
