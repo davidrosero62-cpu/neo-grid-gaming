@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { useEffectEvent } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 
 /**
@@ -34,14 +33,21 @@ function Navbar() {
     }, [location]);
 
     // --- LÓGICA DE CERRAR SESIÓN ---
-    const handleLogout = () => {
-       // 1. Borramos solo el rol (el backend se encarga de expirar la cookie de sesión mediante la ruta logout)
-        localStorage.removeItem("rol");
-        setUsuarioRol(null);
-
-        // 3. Redirigimos al usuario al login
-        navigate("/login", { state: { mensajeExito: "Sesión cerrada correctamente."} } );
-    };
+    const handleLogout = async () => {
+        try {
+            await fetch("http://localhost:5000/api/logout", {
+                method: "POST",
+                credentials: "include" // para que viaje la cookie que vamos a invalidar
+            });
+        } catch (error) {
+            console.error("Error al cerrar la sesión", error);
+        } finally {
+            //Limpiamos el estado local independientemente del resultado de la petición
+            localStorage.removeItem("rol");
+            setUsuarioRol(null);
+            navigate("/login", {state: { mensajeExito: "Sesión cerrada correctamente"} });
+        }
+    }
 
     return (
     <header>

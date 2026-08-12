@@ -14,6 +14,13 @@ from flask import Flask, request, jsonify
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
 
+
+from PIL import Image
+import re
+
+EMAIL_REGEX = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+
+
 # Importaciones para crear y verificar JSON Web Tokens (JWT)
 import jwt # Librería para firmar y validar tokens de autenticación segura
 import datetime # Módulo para manejar tiempos de expiración de tokens
@@ -92,6 +99,19 @@ def extension_permitida(nombre_archivo):
     extension = nombre_archivo.rsplit(".", 1)[1].lower()
     return extension in EXTENSIONES_PERMITIDAS
 
+def es_imagen_valida(archivo):
+    """
+    Verifica que el contenido del archivo sea realmente una imagen decodificable,
+    no solo que su nombre termine en una extension permitida
+    """
+    try:
+        archivo.stream.seek(0) # nos aseguramos de leer desde el inicio
+        Image.open(archivo.stream).verify()
+        archivo.stream.seek(0) #devolvemos el cursor al inicio para poder guardalo despues
+        return True
+    except Exception:
+        return False
+
 def obtener_usuario_desde_token():
     """
     Lee la cookie 'token' enviada automáticamente por el navegador y la decodifica.
@@ -163,7 +183,25 @@ def login():
     except mysql.connector.Error as err:
         return jsonify({"error": f"Erorr en la base de datos: {err}"}), 500
     
+# Ruta para el cierre de sesión (Logout)
 
+@app.route("/api/logout", methods=["POST"])
+def logout():
+    """
+    Cierra la sesión eliminando la cookie httpOnly del navegador
+    """
+    response = jsonify({"mensaje": "Sesión cerrada correctamente"})
+    response.set_cookie(
+        key="token",
+        value="",
+        httponly=True,
+        secure=False,
+        samesite="Lax",
+        max_age=0,
+        expires=0
+    )
+
+    return response, 200
 
 @app.route("/api/register", methods=["POST"])
 @limiter.limit("3 per minute")  # Máximo 3 registros por minuto por IP para evitar SPAM
@@ -180,6 +218,12 @@ def register():
     email = datos["email"]
     password = datos["password"]
 
+    if not EMAIL_REGEX.match(email):
+        return jsonify({"error": "El formato del correo no es válido"}), 400
+
+    if len(password) <8:
+        return jsonify({"error": "La contraseña debe tener al menos 8 caracteres"}), 400
+
     try:
         conexion = obtener_conexion()
         cursor = conexion.cursor()
@@ -192,18 +236,24 @@ def register():
         )
         conexion.commit()
 
-        # Éxito (Corregido 'status' y ortografía)
+        # Éxito 
         return jsonify({
             "status": "success",
             "mensaje": "Si el correo no estaba registrado, tu cuenta ha sido creada."
         }), 201
         
-    except mysql.connector.Error:
-        # Error / Correo ya existente
-        return jsonify({
+    except mysql.connector.Error as err:
+        if err.errno == 1062:
+        # Error / Correo ya regsitrado
+            return jsonify({
             "status": "success",
             "mensaje": "Si el correo no estaba registrado, tu cuenta ha sido creada."
         }), 201
+
+        else: 
+        # Cualquier otro error (Conexion, esquema, etc.) Sí debe reportarse como error real
+            print("Error inesperado en registro:", err)
+            return jsonify({"error": "Ocurrió un error al procesar el registro"}), 500
     
     finally:
         if 'cursor' in locals() and cursor is not None:
@@ -317,11 +367,22 @@ def api_agregar_producto():
     if imagen and imagen.filename != "":
         if not extension_permitida(imagen.filename):
             return jsonify({"error": "Tipo de archivo no permitido"}), 400
+
+        if not es_imagen_valida(imagen):
+            return jsonify({"error": "El archivo no es una imagen valida"}), 400
         
         nombre_imagen = secure_filename(imagen.filename)
         if nombre_imagen == "":
             return jsonify({"error": "Nombre de archivo no valido"}), 400
         imagen.save(os.path.join(app.config["UPLOAD_FOLDER"], nombre_imagen))
+
+    try:
+        precio = float(precio)
+        stock = int(stock)
+        if precio < 0 or stock < 0:
+            raise ValueError("Precio o stock negativo")
+    except (TypeError, ValueError):
+        return jsonify({"error": "Precio o stock invalido"}), 400
         
     try:
         conexion = obtener_conexion()
