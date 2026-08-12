@@ -73,16 +73,10 @@ const Admin = () => {
     useEffect(() => {
         const cargarDatosIniciales = async () => {
             try {
-                // Sácamos el token que se guardó en el localStorage al iniciar sesión
-                const token = localStorage.getItem("token"); 
-
                 const [resCat, resProd] = await Promise.all([
                     fetch('http://localhost:5000/api/categorias'),
                     fetch('http://localhost:5000/api/productos', {
-                        headers: {
-                            // Le enviamos la llave de administrador en los headers
-                            'Authorization': `Bearer ${token}` 
-                        }
+                        credentials: 'include' // OBLIGATORIO para enviar la cookie HttpOnly
                     })
                 ]);
 
@@ -91,9 +85,7 @@ const Admin = () => {
                     const datosProd = await resProd.json();
                     if (Array.isArray(datosProd)) {
                         setProductos(datosProd);
-                    } else {
-                        console.warn("Se recibió un error en lugar de la lista de productos", datosProd);
-                    }
+                    } 
                 }
             } catch (error) {
                 console.error('Error al cargar datos:', error);
@@ -126,17 +118,10 @@ const Admin = () => {
         if (formData.imagen) data.append('imagen', formData.imagen);
 
         try {
-
-            // Recuperamos el token antes de la peticion
-            const token = localStorage.getItem("token");
-
             const respuesta = await fetch('http://localhost:5000/api/productos', {
                 method: 'POST',
-                headers: {
-                // Enviamos el token
-                'Authorization': `Bearer ${token}`
-                },
-                body: data // No se pone headers de Content-Type cuando es FormData, el navegador lo hace solo
+               credentials: 'include', // OBLIGATORIO 
+                body: data
             });
 
             if (respuesta.ok) {
@@ -157,16 +142,10 @@ const Admin = () => {
     const handleEliminar = async (id) => {
         if (window.confirm('¿Está seguro de eliminar este producto?')) {
             try {
-
-                // Recuperamos el token para autorizar el borrado
-                const token = localStorage.getItem("token");
-
-                const respuesta = await fetch(`http://localhost:5000/api/productos/${id}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
+            const respuesta = await fetch(`http://localhost:5000/api/productos/${id}`, {
+                method: 'DELETE',
+                credentials: 'include' // ¡OBLIGATORIO para que viaje la cookie de autorización!
+            });
                 if (respuesta.ok) {
                     setProductos(productos.filter(p => p.id_producto !== id));
                     alert('Producto eliminado');

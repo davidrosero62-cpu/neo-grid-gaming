@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useEffectEvent } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 
 /**
@@ -14,8 +15,12 @@ function Navbar() {
     const [altoContraste, setAltoContraste] = useState(false);
     
     // Estados dinámicos para la sesión
-    const [token, setToken] = useState(localStorage.getItem("token") || null);
     const [usuarioRol, setUsuarioRol] = useState(localStorage.getItem("rol") || null);
+
+    useEffect (() => {
+        setUsuarioRol(localStorage.getItem("rol"));
+    }, [location]);
+
 
     // Efecto para la accesibilidad
     useEffect(() => {
@@ -23,20 +28,15 @@ function Navbar() {
         document.body.classList.toggle('alto-contraste', altoContraste);
     }, [fontSize, altoContraste]);
 
-    // Efecto para actualizar el Token y el Rol cada vez que el usuario cambie de página
+    // Efecto para actualizar  Rol cada vez que el usuario cambie de página
     useEffect(() => {
-        setToken(localStorage.getItem("token"));
         setUsuarioRol(localStorage.getItem("rol"));
     }, [location]);
 
     // --- LÓGICA DE CERRAR SESIÓN ---
     const handleLogout = () => {
-        // 1. Borramos los datos de sesión del almacenamiento del navegador
-        localStorage.removeItem("token");
+       // 1. Borramos solo el rol (el backend se encarga de expirar la cookie de sesión mediante la ruta logout)
         localStorage.removeItem("rol");
-
-        // 2. Limpiamos el estado de React inmediatamente para actualizar el Navbar
-        setToken(null);
         setUsuarioRol(null);
 
         // 3. Redirigimos al usuario al login
@@ -68,8 +68,8 @@ function Navbar() {
             </a>
 
             <div className="login">
-                {token ? (
-                    /* PUNTO 1: BOTÓN DE CERRAR SESIÓN TOTALMENTE MIGRADO A REACT */
+                {usuarioRol ? (
+                    
                     <button 
                         onClick={handleLogout} 
                         className="btn-logout-nav" 

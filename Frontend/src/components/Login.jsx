@@ -43,6 +43,7 @@ function Login () {
             const response = await fetch("http://localhost:5000/api/login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
+                credentials: 'include', // <---- Muy Importante
                 body: JSON.stringify ({
                     correo: formData.email,
                     password: formData.password
@@ -51,8 +52,7 @@ function Login () {
 
             const data = await response.json();
             if (response.ok) {
-                // Guardamos el rol y el token en la memoria del navegador
-                localStorage.setItem("token", data.token);
+                // Guardamos el rol en la memoria del navegador
                 localStorage.setItem("rol", data.rol);
 
                 if (data.rol === "admin") {

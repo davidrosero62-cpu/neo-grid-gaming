@@ -38,18 +38,25 @@ from flask_cors import CORS
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app) # Permite que tu frontend de React (puerto 5173 / 3000) se comunique con Flask (puerto 5000)
+CORS(app, supports_credentials=True, origins=["http://localhost:5173"]) # Permite que tu frontend de React (puerto 5173 / 3000) se comunique con Flask (puerto 5000)
 
 # Configuración de Flask-Limiter para la IP del cliente
 limiter = Limiter(
     app=app,
     key_func=get_remote_address,
-    default_limits=[] # Sin límites globales, solo específicos por ruta
+    default_limits=[], # Sin límites globales, solo específicos por ruta (para desarrollo)
+    storage_uri=os.getenv("REDIS_URL", "memory://")
 )
 
-# Clave secreta para firmar los JWTs
-app.secret_key = os.getenv("SECRET_KEY", "clave_dev_temporal")
+# Intentamos obtener la clave secreta del entorno
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
 
+# Si no esta configurada, detenemos la ejecucion inmediatamente
+if not app.config['SECRET_KEY']:
+    raise RuntimeError(
+        "ERROR CRITICO: La variable de entorno SECRET_KEY no esta configurada. "
+        "La aplicación no puede iniciar de manera segura"
+    )
 # Configuración de subida de imágenes para los productos
 UPLOAD_FOLDER = os.path.join("static", "img", "productos")
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
@@ -87,21 +94,18 @@ def extension_permitida(nombre_archivo):
 
 def obtener_usuario_desde_token():
     """
-    Lee la cabecera 'Authorization', extrae el token JWT y lo decodifica.
-    Retorna un diccionario con los datos del usuario si el token es válido, 
-    de lo contrario retorna None.
+    Lee la cookie 'token' enviada automáticamente por el navegador y la decodifica.
+    Retorna un diccionario con los datos del usuario si es válida, o None si no.
     """
-    auth_header = request.headers.get('Authorization')
-    if not auth_header:
+    token = request.cookies.get('token')
+    if not token:
         return None
     
     try:
-        # El header llega como: "Bearer eyJhbGci..."
-        token = auth_header.split(" ")[1]
         datos = jwt.decode(token, app.secret_key, algorithms=['HS256'])
-        return datos # Retorna {'idusuario': X, 'rol': 'admin', 'exp': ...}
+        return datos
     except Exception as e:
-        print("Error al decodificar token:", e)
+        print("Error al decodificar token desde cookie:", e)
         return None
 
 # ------------------------------------------------------------------------------
@@ -109,10 +113,8 @@ def obtener_usuario_desde_token():
 # ------------------------------------------------------------------------------
 
 @app.route("/api/login", methods=["POST"])
+@limiter.limit("3 per minute") 
 def login():
-    """
-    API de Login: Valida credenciales, genera un token JWT y lo retorna junto al rol.
-    """
     data = request.json
     correo = data.get("correo")
     password = data.get("password")
@@ -123,32 +125,44 @@ def login():
     try:
         conexion = obtener_conexion()
         cursor = conexion.cursor(dictionary=True)
-        
-        cursor.execute("SELECT idusuario, password, rol FROM usuario WHERE correo = %s", (correo,))
+
+        cursor.execute ("SELECT idusuario, password, rol FROM usuario WHERE correo = %s", (correo,))
         usuario = cursor.fetchone()
 
         cursor.close()
         conexion.close()
 
         if usuario and check_password_hash(usuario["password"], password):
-            # Creación del token JWT que expira en 24 horas
             token = jwt.encode({
                 'idusuario': usuario['idusuario'],
-                'rol': usuario['rol'],
+                'rol': usuario ['rol'],
                 'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=24)
             }, app.secret_key, algorithm='HS256')
 
-            return jsonify({
+            # Creamos la respuesta Json con los datos no sensibles (rol e id)
+            response = jsonify({
                 "mensaje": "Inicio de sesión exitoso",
                 "rol": usuario["rol"],
-                "idusuario": usuario["idusuario"],
-                "token": token
-            }), 200
+                "idusuario": usuario["idusuario"]
+            })
+
+            # Inyectamos el token en una cookie HttpOnly segura
+            response.set_cookie(
+                key="token",
+                value=token,
+                httponly=True, # Bloquea lectura por JavaScript (Proteccion contra XSS)
+                secure=False,  # Cambiarlo a True cuando se use HTTPS en producción
+                samesite="Lax",  # Proteccion contra ataques CSRF
+                max_age=86400  # 24 horas de expiración
+            )
+
+            return response, 200
         else:
-            return jsonify({"error": "Correo o contraseña incorrectos"}), 401
+            return jsonify({"error": "Correo o contreaseña incorrectos"}), 401
 
     except mysql.connector.Error as err:
-        return jsonify({"error": f"Error en la base de datos: {err}"}), 500
+        return jsonify({"error": f"Erorr en la base de datos: {err}"}), 500
+    
 
 
 @app.route("/api/register", methods=["POST"])
