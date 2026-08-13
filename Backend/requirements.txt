@@ -16,6 +16,7 @@ mysql-connector-python==9.6.0
 ordered-set==4.1.0
 packaging==26.2
 pathspec==1.1.0
+pillow==12.3.0
 platformdirs==4.9.6
 psycopg2-binary==2.9.12
 PyJWT==2.13.0
