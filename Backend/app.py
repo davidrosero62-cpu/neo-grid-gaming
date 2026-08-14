@@ -149,6 +149,7 @@ def login():
             return jsonify({"error": "Correo o contraseña incorrectos"}), 401
 
     except psycopg2.Error as err:
+        print("Error en login", err)
         return jsonify({"error": "Error en la base de datos"}), 500
 
 
