@@ -1,56 +1,30 @@
-import React, {use, useState} from "react";
+import React, {useState} from "react";
 import { Link, useNavigate} from 'react-router-dom';
+import { registrarUsuario  } from "../../services/api";
 
 /**
  * @description Componente que renderiza el formulario de registro de la aplicacion 
  * @returns {JSX.Element} Estructura de la vista login.
  */
 
-function Register() {
-     const[formData, setFormData] = useState({
-        nombre: '',
-        email: '', 
-        password: ''
-    });
-
-const navigate = useNavigate(); /*Inicializa la función de navegación para poder usarla más adelante (por ejemplo, para mandar al usuario al login). */
-const [mensaje, setMensaje] = useState("");/*Crea una variable de estado llamada mensaje (que empieza vacía) para guardar el texto de respuesta que envíe la API. */
+function Register(){
+    const [formData, setFormdata] = useState({nombre: '', email: '', password:'' });
+    const navigate = useNavigate();
+    const [mensaje, setMensaje] = useState("");
 
     const handleChange = (e) => {
-        const { name, value} = e.target;
-        setFormData({
-            ...formData,
-            [name]: value
-        });
+        const { name, value } = e.target;
+        setFormdata({ ...formData, [name]: value });
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-    
-try {
-    const response = await fetch(`${API_URL}/api/register`,{
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(formData)
-    });
-
-    const data = await response.json();
-    if (response.ok) {
-        // Redirigimos sin retrasos, enviando el mensaje en el equipaje de la ruta
-        navigate("/login", {state: { mensajeExito: data.mensaje } });
-        
-    } else {
-        // Si el servidor respondio con error (400, 500, etc)
-        // Mostramos el mensaje que viene desde el backend
-        setMensaje(data.mensaje || "Error al registrar usuario");
-    }
-
-    } catch (error) {
-    // Solo entra aqui si el internet se cae o el servidor no responde.
-        setMensaje("Hubo un error de conexion con el servidor");
-    }
+        try{
+            const data = await registrarUsuario(formData);
+            navigate("/login", { state: {mensajeExito: data.mensaje } });
+        } catch (error) {
+            setMensaje(error.message || "Error al registrar usuario");
+        }
     };
     return(
         <main>

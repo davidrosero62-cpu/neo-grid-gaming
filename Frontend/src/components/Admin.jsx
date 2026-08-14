@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Alertas from "./Alertas";
+import { obtenerCategorias, obtenerProductosAdmin, agregarProducto, eliminarProducto, API_URL } from "../../services/api";
 
 /**
  * Componente de adminstracion (CRUD) para la gesion del invebtariio.
@@ -27,39 +28,25 @@ import Alertas from "./Alertas";
 
 const Admin = () => {
     const navigate = useNavigate();
-       const location = useLocation(); // Hook para leer el estado enviado desde Register
-   
-       // Estado para controlar las alertas locales del login
-       const[alertas, setAlertas] = useState([]);
-   
-       // Efecto para verificar si venimos desde el registro con un mensaje de exito
-       useEffect(() => {
-           if (location.state && location.state.mensajeExito) {
-               // Guardamos el mensaje en el formato que espera el componente Alertas ([{ texto "..."}])
-               setAlertas([{ texto: location.state.mensajeExito }]);
-   
-               //Limpiamos el historial de navegacion para que si el usuario recarga la pagina,
-               // el mensaje de registro exitoso desaparezca
-               window.history.replaceState({}, document.title);
-           }
-       }, [location]);
+    const location = useLocation();
+    const [alertas, setAlertas] = useState([]);
 
-    // --- ESTADOS ---
+    useEffect(() => {
+        if (location.state && location.state.mensajeExito) {
+            setAlertas([{ texto: location.state.mensajeExito }]);
+            window.history.replaceState({}, document.title);
+        }
+    }, [location]);
+
     const [formData, setFormData] = useState({
-        nombre: '',
-        precio: '',
-        stock: '',
-        descripcion: '',
-        categoria: '',
-        imagen: null
+        nombre: '', precio: '', stock: '', descripcion: '', categoria: '', imagen: null
     });
     const [categorias, setCategorias] = useState([]);
     const [productos, setProductos] = useState([]);
     const [loading, setLoading] = useState(false);
 
-    // --- EFECTOS ---
-
-    // 1. El Portero: Seguridad
+    // Portero de UI: solo decide qué se RENDERIZA. La autorización real
+    // la aplica el backend en cada endpoint, validando la cookie httpOnly.
     useEffect(() => {
         const rolUsuario = sessionStorage.getItem("rol");
         if (rolUsuario !== "admin") {
@@ -68,32 +55,18 @@ const Admin = () => {
         }
     }, [navigate]);
 
-    // 2. Cargar Categorías y Productos al montar
-    // 2. Cargar Categorías y Productos al montar
     useEffect(() => {
         const cargarDatosIniciales = async () => {
             try {
-                // Sácamos el token que se guardó en el localStorage al iniciar sesión
-                const token = sessionStorage.getItem("token"); 
-
-                const [resCat, resProd] = await Promise.all([
-                    fetch(`${API_URL}/api/categorias`),
-                    fetch(`${API_URL}/api/productos`, {
-                        headers: {
-                            // Le enviamos la llave de administrador en los headers
-                            'Authorization': `Bearer ${token}` 
-                        }
-                    })
+                const [cats, prods] = await Promise.all([
+                    obtenerCategorias(),
+                    obtenerProductosAdmin()
                 ]);
-
-                if (resCat.ok) setCategorias(await resCat.json());
-                if (resProd.ok) {
-                    const datosProd = await resProd.json();
-                    if (Array.isArray(datosProd)) {
-                        setProductos(datosProd);
-                    } else {
-                        console.warn("Se recibió un error en lugar de la lista de productos", datosProd);
-                    }
+                setCategorias(cats);
+                if (Array.isArray(prods)) {
+                    setProductos(prods);
+                } else {
+                    console.warn("Se recibió un error en lugar de la lista de productos", prods);
                 }
             } catch (error) {
                 console.error('Error al cargar datos:', error);
@@ -102,21 +75,15 @@ const Admin = () => {
         cargarDatosIniciales();
     }, []);
 
-    // --- MANEJADORES DE EVENTOS ---
-
     const handleChange = (e) => {
         const { name, value, type, files } = e.target;
-        setFormData({
-            ...formData,
-            [name]: type === 'file' ? files[0] : value
-        });
+        setFormData({ ...formData, [name]: type === 'file' ? files[0] : value });
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
 
-        // Al enviar imágenes, se debe usar FormData
         const data = new FormData();
         data.append('nombre', formData.nombre);
         data.append('precio', formData.precio);
@@ -126,29 +93,12 @@ const Admin = () => {
         if (formData.imagen) data.append('imagen', formData.imagen);
 
         try {
-
-            // Recuperamos el token antes de la peticion
-            const token = sessionStorage.getItem("token");
-
-            const respuesta = await fetch(`${API_URL}/api/productos`, {
-                method: 'POST',
-                headers: {
-                // Enviamos el token
-                "Authorization": `Bearer ${token}`
-                },
-                body: data // No se pone headers de Content-Type cuando es FormData, el navegador lo hace solo
-            });
-
-            if (respuesta.ok) {
-                alert('Producto guardado correctamente');
-                // Limpiar formulario y recargar productos
-                setFormData({ nombre: '', precio: '', stock: '', descripcion: '', categoria: '', imagen: null });
-                window.location.reload(); 
-            } else {
-                alert('Error al guardar el producto');
-            }
+            await agregarProducto(data);
+            alert('Producto guardado correctamente');
+            setFormData({ nombre: '', precio: '', stock: '', descripcion: '', categoria: '', imagen: null });
+            window.location.reload();
         } catch (error) {
-            console.error('Error:', error);
+            alert('Error al guardar el producto: ' + error.message);
         } finally {
             setLoading(false);
         }
@@ -157,20 +107,9 @@ const Admin = () => {
     const handleEliminar = async (id) => {
         if (window.confirm('¿Está seguro de eliminar este producto?')) {
             try {
-
-                // Recuperamos el token para autorizar el borrado
-                const token = sessionStorage.getItem("token");
-
-                const respuesta = await fetch(`${API_URL}/api/productos/${id}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                if (respuesta.ok) {
-                    setProductos(productos.filter(p => p.id_producto !== id));
-                    alert('Producto eliminado');
-                }
+                await eliminarProducto(id);
+                setProductos(productos.filter(p => p.id_producto !== id));
+                alert('Producto eliminado');
             } catch (error) {
                 console.error('Error al eliminar:', error);
             }

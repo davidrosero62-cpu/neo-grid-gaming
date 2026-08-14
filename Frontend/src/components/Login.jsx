@@ -8,59 +8,42 @@ import { loginUsuario } from "../../services/api";
  * @returns {JSX.Element} Estructura de la vista login.
  */
 
-function Login () {
-    const[formData, setFormData] = useState({email: '', password: '' });
+function Login() {
+    const [formData, setFormdata] = useState({ email: '', password:''});
     const navigate = useNavigate();
-    const location = useLocation(); // Hook para leer el estado enviado desde Register
+    const location = useLocation();
+    const [alertas, setAlertas] = useState([]);
 
-    // Estado para controlar las alertas locales del login
-    const[alertas, setAlertas] = useState([]);
-
-    // Efecto para verificar si venimos desde el registro con un mensaje de exito
     useEffect(() => {
         if (location.state && location.state.mensajeExito) {
-            // Guardamos el mensaje en el formato que espera el componente Alertas ([{ texto "..."}])
             setAlertas([{ texto: location.state.mensajeExito }]);
-
-            //Limpiamos el historial de navegacion para que si el usuario recarga la pagina,
-            // el mensaje de registro exitoso desaparezca
             window.history.replaceState({}, document.title);
         }
     }, [location]);
 
-
     const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({
-            ...formData,
-            [name]: value
-        });
+        const {name, value} = e.target;
+        setFormdata({...formData, [name]: value});
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
         try {
-            //Llamamos al servicio que centraliza la petición
             const data = await loginUsuario({
                 correo: formData.email,
                 password: formData.password
             });
-                // Guardamos el rol y el token en la memoria del navegador
-                sessionStorage.setItem("token", data.token);
-                sessionStorage.setItem("rol", data.rol);
+            sessionStorage.setItem("rol", data.rol);
 
-                if (data.rol === "admin") {
-                    navigate("/admin", {state: { mensajeExito: "¡Bienvenido al panel de administración!"}});
-                } else {
-                    navigate("/", {state: {mensajeExito: "¡Bienvenido a Neo Grid!"}});
-                
-                } 
-
+            if (data.rol === "admin") {
+                navigate("/admin", {state: { mensajeExito: "¡Bienvenido al panel de administración!"} });
+            } else {
+                navigate("/", {state: {mensajeExito: "¡Bienvenido a Neo Grid!" }})
+            }
         } catch (error) {
-            setAlertas([{ texto: "Hubo un error de conexión con el servidor"}]);
+            setAlertas([{texto: "Correo o contraseña incorrectos "}]);
         }
-    };
+}
 
    return (
         <div className="contenedor-login-vista">

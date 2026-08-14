@@ -1,47 +1,42 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
+import { logoutUsuario  } from "../../services/api";
 
 /**
  * @component Navbar
  * @description Componente que renderiza la barra de navegacion de Neo Grid gaming
  */
+
 function Navbar() {
     const navigate = useNavigate();
-    const location = useLocation(); // Detecta cambios de ruta para actualizar el estado del Navbar
+    const location = useLocation();
 
-    // --- ESTADOS ---
     const [fontSize, setFontSize] = useState(16);
     const [altoContraste, setAltoContraste] = useState(false);
-    
-    // Estados dinámicos para la sesión
-    const [token, setToken] = useState(sessionStorage.getItem("token") || null);
     const [usuarioRol, setUsuarioRol] = useState(sessionStorage.getItem("rol") || null);
 
-    // Efecto para la accesibilidad
-    useEffect(() => {
+    useEffect(() =>{
         document.body.style.fontSize = `${fontSize}px`;
         document.body.classList.toggle('alto-contraste', altoContraste);
     }, [fontSize, altoContraste]);
 
-    // Efecto para actualizar el Token y el Rol cada vez que el usuario cambie de página
     useEffect(() => {
-        setToken(sessionStorage.getItem("token"));
         setUsuarioRol(sessionStorage.getItem("rol"));
     }, [location]);
 
-    // --- LÓGICA DE CERRAR SESIÓN ---
-    const handleLogout = () => {
-        // 1. Borramos los datos de sesión del almacenamiento del navegador
-        sessionStorage.removeItem("token");
-        sessionStorage.removeItem("rol");
+    const handleLogout = async () => {
+        try {
+            await logoutUsuario(); // Invalida la cookie del lado del servidor
+        } catch (error) {
+            console.error("Error al cerrar sesión", error);
+        } finally {
+            sessionStorage.removeItem("rol");
+            setUsuarioRol(null);
+            navigate("/login", {state: {mensajeExito: "Sesión cerrada correctamente"} });
+        }
+};
 
-        // 2. Limpiamos el estado de React inmediatamente para actualizar el Navbar
-        setToken(null);
-        setUsuarioRol(null);
 
-        // 3. Redirigimos al usuario al login
-        navigate("/login", { state: { mensajeExito: "Sesión cerrada correctamente."} } );
-    };
 
     return (
     <header>
@@ -61,48 +56,33 @@ function Navbar() {
             <li><a href="#politicas">Políticas</a></li>
         </ul>
 
-        <div className="cart">
-            <a href="/carrito" id="cart-icon">
-                <i className="fas fa-shopping-cart"></i>
+        <div className="nav-actions">
+            <div className="cart">
+                <Link to="/carrito" id="cart-icon">
+                    <i className="fas fa-shopping-cart"></i>
+                </Link>
                 <span id="cart-count">0</span>
-            </a>
+            </div>
 
-            <div className="login">
-                {token ? (
-                    /* PUNTO 1: BOTÓN DE CERRAR SESIÓN TOTALMENTE MIGRADO A REACT */
-                    <button 
-                        onClick={handleLogout} 
-                        className="btn-logout-nav" 
-                        title="Cerrar Sesión"
-                        style={{ 
-                            background: 'none', 
-                            border: 'none', 
-                            color: 'inherit', 
-                            cursor: 'pointer', 
-                            font: 'inherit',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '5px'
-                        }}
-                    >
-                        <i className="fas fa-arrow-right-from-bracket"></i> Cerrar Sesión
+            <div className="login-container">
+                {usuarioRol ? (
+                    <button onClick={handleLogout} className="btn-logout-nav" title="Cerrar Sesión">
+                        <i className="fas fa-sign-out-alt"></i> Cerrar Sesión
                     </button>
                 ) : (
-                    /* BOTÓN DE INICIAR SESIÓN (Se muestra si NO hay un token activo) */
-                    /* Cambiado de <a> a <Link> para evitar recargas completas en React */
-                    <Link to="/login">
+                    <Link to="/login" className="login-navbar-link">
                         <i className="fas fa-user"></i> Iniciar Sesión
                     </Link>
                 )}
             </div>
+
+            {usuarioRol === 'admin' && (
+                <Link to="/admin" className="btn-panel-nav" title="Panel de administración">
+                    <i className="fas fa-user-shield"></i> Admin
+                </Link>
+            )}
         </div>
 
-        {/* PUNTO 2: EL BOTÓN DE ADMIN SOLO ES VISIBLE SI EL ROL ES 'admin' */}
-        {usuarioRol === 'admin' && (
-            <Link to="/admin" className="btn-panel-nav" title="Panel de Administración">
-                <i className="fas fa-user-shield"></i> Admin
-            </Link>
-        )}
 
         {/* Menu de accesibilidad */}
         <div className="accesibilidad-menu">
