@@ -30,7 +30,7 @@ app = Flask(__name__)
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173")
 CORS(app, supports_credentials=True, origins=[FRONTEND_URL])
 
-Limiter = Limiter(
+limiter = Limiter(
     app=app,
     key_func=get_remote_address,
     default_limits=[],
@@ -50,7 +50,7 @@ ES_PRODUCCION = os.getenv("FLASK_ENV") == "production"
 UPLOAD_FOLDER = os.path.join("static", "img", "productos")
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 app.config["MAX_CONTENT_LENGTH"] = 5* 1024 * 1024
-EXTENSIONES_PERMITIDAS = { "jpg", "jpeg", "png", "gif", "web"}
+EXTENSIONES_PERMITIDAS = { "jpg", "jpeg", "png", "gif", "webp"}
 EMAIL_REGEX = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 
 def obtener_conexion():
@@ -103,9 +103,10 @@ def set_cookie_token(response, token):
     response.set_cookie(
         key="token",
         value=token,
-        httpOnly=True,
+        httponly=True,
         secure=ES_PRODUCCION, #True en Render (HTTPS), False en local.
         samesite="None" if ES_PRODUCCION else "Lax", # None es obligatorio para cross-site
+        max_age=86400
     )
     return response
 
@@ -115,7 +116,7 @@ def set_cookie_token(response, token):
 # ------------------------------------------------------------------------------
 
 @app.route("/api/login", methods=["POST"])
-@Limiter.limit("5 per minute")
+@limiter.limit("5 per minute")
 def login():
     data = request.json
     correo = data.get("correo")
@@ -127,7 +128,7 @@ def login():
     try:
         conexion = obtener_conexion()
         cursor = conexion.cursor(cursor_factory=RealDictCursor)
-        cursor.execute("SELECT idsuario, password, rol FROM usuario WHERE correo = %s", (correo,))
+        cursor.execute("SELECT idusuario, password, rol FROM usuario WHERE correo = %s", (correo,))
         usuario = cursor.fetchone()
         cursor.close()
         conexion.close()
@@ -137,7 +138,7 @@ def login():
                 'idusuario': usuario['idusuario'],
                 'rol': usuario['rol'],
                 'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=24)
-            }, app.secret_key, algorithm=['HS256'])
+            }, app.secret_key, algorithm='HS256')
 
             response = jsonify({
                 "mensaje": "Inicio de sesión exitoso",
@@ -168,7 +169,7 @@ def logout():
     return response, 200
 
 @app.route("/api/register", methods=["POST"])
-@Limiter.limit("3 per minute")
+@limiter.limit("3 per minute")
 def register():
     datos = request.get_json()
 
@@ -180,7 +181,10 @@ def register():
     password = datos["password"]
 
     if not EMAIL_REGEX.match(email):
-        return jsonify({"error": "La contraseña debe tener al menos 8 caracteres"}), 400
+        return jsonify({"error": "El formato del correo no es valido"}), 400
+
+    if len(password) < 8:
+        return jsonify({"error", "La contraseña debe tener almenos 8 caracteres"}), 400
 
     conexion = None
     cursor = None
@@ -282,7 +286,7 @@ def api_productos():
 @app.route("/api/productos", methods=["POST"])
 def api_agregar_productos():
     usuario = obtener_usuario_desde_token()
-    if not usuario or not usuario.get("rol") != "admin":
+    if not usuario or usuario.get("rol") != "admin":
         return jsonify ({"error": "Acceso denegado: Se requieren permisos de administrados"}), 403
 
     nombre = request.form.get("nombre")
@@ -317,6 +321,7 @@ def api_agregar_productos():
         cursor.execute(
             """INSERT INTO producto (nombre, precio, stock, imagen, categori_id_categoria, descripcion)
                 VALUES (%s, %s, %s, %s, %s)""",
+                (nombre, precio, stock, nombre_imagen, categoria, descripcion)
         )
         conexion.commit()
         cursor.close()
