@@ -5,6 +5,9 @@
 import os
 from dotenv import load_dotenv
 
+# Carga de variables de entorno (.env)
+load_dotenv()
+
 from flask import Flask
 from flask_cors import CORS
 
@@ -16,8 +19,6 @@ from routes.auth_routes import auth_bp
 from routes.categorias_routes import categorias_bp
 from routes.productos_routes import productos_bp
 
-# Carga de variables de entorno (.env)
-load_dotenv()
 
 # Inicialización del servidor Flask
 app = Flask(__name__)
