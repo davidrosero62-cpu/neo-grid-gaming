@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  # --- SERVICIO 1: BACKEND (FLASK) ---
+  backend:
+    build:
+      context: ./Backend  # Ruta a la carpeta del backend donde está su Dockerfile
+    ports:
+      - "8000:8000"       # Mapea el puerto 8000 de tu PC al 8000 del contenedor
+    env_file:
+      - ./Backend/.env    # Lee las variables locales y credenciales de Supabase
+    volumes:
+      - ./Backend:/app    # Refleja cambios de código en tiempo real sin reconstruir
+
+  # --- SERVICIO 2: FRONTEND (REACT + VITE + PNPM) ---
+  frontend:
+    build:
+      context: ./Frontend # Ruta a la carpeta del frontend donde está su Dockerfile
+    ports:
+      - "5173:5173"       # Mapea el puerto de Vite de tu PC al del contenedor
+    volumes:
+      - ./Frontend:/app   # Refleja cambios de React en tiempo real (Hot Reload)
+      - /app/node_modules # Evita que tu node_modules local sobreescriba el del contenedor
+    environment:
+      # Apunta a la API de Flask que corre en la misma red de Docker
+      - VITE_API_URL=http://localhost:8000
+    depends_on:
+      - backend           # Asegura que el backend arranque antes que el frontend

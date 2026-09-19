@@ -1,7 +1,14 @@
 # ==========================================
+# VARIABLES DE ENTORNO (Archivos Sensibles)
+# ==========================================
+.env
+*.env
+**/.env
+**/.env.*
+
+# ==========================================
 # BACKEND (Python / Flask)
 # ==========================================
-Backend/.env
 Backend/__pycache__/
 Backend/*.pyc
 Backend/*.pyo
@@ -13,8 +20,8 @@ Backend/env/
 # ==========================================
 Frontend/node_modules/
 Frontend/dist/
-Frontend/.env.local
-Frontend/.env.*.local
+Frontend/dist-ssr/
+*.log
 
 # ==========================================
 # ARCHIVOS DEL SISTEMA Y EDITORES
@@ -23,4 +30,3 @@ Frontend/.env.*.local
 Thumbs.db
 .vscode/
 .idea/
-
