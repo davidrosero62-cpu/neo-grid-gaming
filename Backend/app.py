@@ -23,6 +23,8 @@ from routes.productos_routes import productos_bp
 # Inicialización del servidor Flask
 app = Flask(__name__)
 
+
+
 # ------------------------------------------------------------------------------
 # CONFIGURACIÓN DE EXTENSIONES Y SEGURIDAD
 # ------------------------------------------------------------------------------

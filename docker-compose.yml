@@ -9,8 +9,14 @@ services:
       - "8000:8000"       # Mapea el puerto 8000 de tu PC al 8000 del contenedor
     env_file:
       - ./Backend/.env    # Lee las variables locales y credenciales de Supabase
+
+    environment:
+      - PORT=8000
+      - FLASK_RUN_HOST=0.0.0.0
+      - FLASK_ENV=development
+
     volumes:
-      - ./Backend:/app    # Refleja cambios de código en tiempo real sin reconstruir
+      - ./Backend:/app:z   # Refleja cambios de código en tiempo real sin reconstruir
 
   # --- SERVICIO 2: FRONTEND (REACT + VITE + PNPM) ---
   frontend:
@@ -19,7 +25,7 @@ services:
     ports:
       - "5173:5173"       # Mapea el puerto de Vite de tu PC al del contenedor
     volumes:
-      - ./Frontend:/app   # Refleja cambios de React en tiempo real (Hot Reload)
+      - ./Frontend:/app:z   # Refleja cambios de React en tiempo real (Hot Reload)
       - /app/node_modules # Evita que tu node_modules local sobreescriba el del contenedor
     environment:
       # Apunta a la API de Flask que corre en la misma red de Docker
