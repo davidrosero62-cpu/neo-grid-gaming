@@ -37,6 +37,25 @@ def obtener_productos_con_categoria():
     finally:
         conexion.close()
 
+def obtener_producto_por_id(id_producto):
+    print("--- DEPURACIÓN OB TENER PRODUCTO ---")
+    print("Valor de id_producto:", id_producto, "Tipo:", type(id_producto))
+
+    conexion = obtener_conexion()
+    try:
+        cursor = conexion.cursor(cursor_factory=RealDictCursor) 
+        cursor.execute(
+            "SELECT id_producto, nombre, precio, stock, imagen, descripcion, categoria_id_categoria FROM producto WHERE id_producto = %s", 
+            (id_producto,)  # 👈 La coma al final es obligatoria para formar la tupla
+        )
+        producto = cursor.fetchone()
+        cursor.close()
+        return producto
+    finally:
+        conexion.close()
+        
+        
+
 
 def crear_producto(nombre, precio, stock, nombre_imagen, categoria, descripcion):
     """Inserta un nuevo producto en la base de datos."""
@@ -62,7 +81,28 @@ def eliminar_producto_por_id(id_producto):
     conexion = obtener_conexion()
     try:
         cursor = conexion.cursor()
-        cursor.execute("DELETE FROM producto WHERE id_producto = %s", (id_producto,))
+        cursor.execute("DELETE FROM producto WHERE id_producto = %s", 
+                       (id_producto,)
+                       )
+        conexion.commit()
+        cursor.close()
+    except Exception as err:
+        conexion.rollback()
+        raise err
+    finally:
+        conexion.close()
+
+
+def modificar_producto_por_id(nombre, precio, stock, imagen, categoria_id_categoria, descripcion, id_producto):
+    conexion = obtener_conexion()  
+    try:
+        cursor = conexion.cursor()  
+        cursor.execute(
+            """UPDATE producto 
+               SET nombre = %s, precio = %s, stock = %s, imagen = %s, categoria_id_categoria = %s, descripcion = %s 
+               WHERE id_producto = %s""",
+            (nombre, precio, stock, imagen, categoria_id_categoria, descripcion, id_producto)
+        )
         conexion.commit()
         cursor.close()
     except Exception as err:

@@ -415,6 +415,22 @@ h3 {
   color: #000000;
 }
 
+.btn-editar {
+  background-color: transparent;
+  color: #006e09;
+  border: 1px solid #006e00;
+  padding: 6px 12px;
+  text-decoration: none;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  transition: 0.3s;
+}
+
+.btn-editar:hover {
+  background-color: #006e09;
+  color: #000000;
+}
+
 /* ===== NAV ADMIN ===== */
 .nav-admin {
   display: flex;

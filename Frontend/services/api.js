@@ -77,4 +77,13 @@ export async function eliminarProducto(id) {
   return manejarRespuesta(response);
 }
 
+export async function modificarProducto(id, datosProducto) {
+  const response = await fetch (`${API_URL}/api/productos/${id}`,{
+    method: "PUT",
+    credentials: "include",
+    body: datosProducto
+  });
+  return manejarRespuesta(response);
+}
+
 export { API_URL};

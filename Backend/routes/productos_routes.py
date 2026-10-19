@@ -12,7 +12,9 @@ from services.productos_service import (
     obtener_todos_los_productos,
     obtener_productos_con_categoria,
     crear_producto,
-    eliminar_producto_por_id
+    eliminar_producto_por_id,
+    modificar_producto_por_id,
+    obtener_producto_por_id
 )
 from utils.auth_helpers import obtener_usuario_desde_token
 
@@ -96,3 +98,58 @@ def api_eliminar_producto(id):
         return jsonify({"mensaje": "Producto eliminado"}), 200
     except Exception:
         return jsonify({"error": "Error al eliminar el producto"}), 500
+
+
+@productos_bp.route("/api/productos/<int:id_producto>", methods=["PUT"])
+def api_modificar_producto(id_producto):
+    usuario = obtener_usuario_desde_token()
+    if not usuario or usuario.get("rol") != "admin":
+        return jsonify({"error": "Acceso denegado: Se requieren permisos de administrador"}), 403
+
+    nombre = request.form.get("nombre")
+    precio_raw = request.form.get("precio")
+    stock_raw = request.form.get("stock")
+    categoria = request.form.get("categoria_id")
+    descripcion = request.form.get("descripcion")
+    imagen = request.files.get("imagen")
+
+    try:
+        precio = float(precio_raw)
+        stock = int(stock_raw)
+        if precio < 0 or stock < 0:
+            raise ValueError()
+    except (TypeError, ValueError):
+        return jsonify({"error": "Precio o Stock invalido"}), 400
+
+    producto_actual = obtener_producto_por_id(id_producto)
+    if not producto_actual:
+        return jsonify({"error": "El producto no existe"}), 404 
+
+    nombre_imagen = producto_actual.get("imagen")
+
+    if imagen and imagen.filename != "":
+        if not extension_permitida(imagen.filename):
+            return jsonify({"error": "El archivo no es una imagen válida"}), 400
+        if not es_imagen_valida(imagen):
+            return jsonify({"error": "El archivo no es una imagen válida"}), 400
+        nombre_nuevo = secure_filename(imagen.filename)
+        if nombre_nuevo == "":
+            return jsonify({"error": "Nombre de archivo no válido"}), 400
+        imagen.save(os.path.join(current_app.config["UPLOAD_FOLDER"], nombre_nuevo))
+        nombre_imagen = nombre_nuevo
+
+    try:
+        modificar_producto_por_id(
+            nombre,
+            precio,
+            stock,
+            nombre_imagen,
+            categoria,
+            descripcion,
+            id_producto
+        )
+        return jsonify({"mensaje": "Producto modificado con éxito"}), 200
+    except Exception as err:
+        print("Error al modificar producto:", err)
+        return jsonify({"error": "Error al modificar el producto"}), 500
+    

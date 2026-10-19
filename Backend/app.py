@@ -29,7 +29,15 @@ app = Flask(__name__)
 # CONFIGURACIÓN DE EXTENSIONES Y SEGURIDAD
 # ------------------------------------------------------------------------------
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173")
-CORS(app, supports_credentials=True, origins=[FRONTEND_URL], resources={r"/*": {"origins": FRONTEND_URL}})
+CORS(
+    app, 
+    supports_credentials=True, 
+    origins=[FRONTEND_URL], 
+    resources={
+        r"/*": {
+            "origins": FRONTEND_URL,
+            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+            }})
 # Asignar limitador de peticiones
 limiter.init_app(app)
 

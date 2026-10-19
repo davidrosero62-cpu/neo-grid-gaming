@@ -1,7 +1,8 @@
 import React, {useEffect, useState} from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Alertas from "./Alertas";
-import { obtenerCategorias, obtenerProductosAdmin, agregarProducto, eliminarProducto, API_URL } from "../../services/api";
+import { obtenerCategorias, obtenerProductosAdmin, agregarProducto, modificarProducto, eliminarProducto, API_URL } from "../../services/api";
+
 
 /**
  * Componente de adminstracion (CRUD) para la gesion del invebtariio.
@@ -38,12 +39,27 @@ const Admin = () => {
         }
     }, [location]);
 
-    const [formData, setFormData] = useState({
-        nombre: '', precio: '', stock: '', descripcion: '', categoria: '', imagen: null
-    });
+    const estadoInicialForm = {
+        nombre: '', precio: '', stock: '', descripcion:'', categoria:'', imagen: null
+    };
+
+    const [formData, setFormData] = useState(estadoInicialForm);
+    const [productoAEditar, setProductoAEditar = useState] = useState(null);
     const [categorias, setCategorias] = useState([]);
     const [productos, setProductos] = useState([]);
     const [loading, setLoading] = useState(false);
+
+    // Funcion auxiliar para recargar el inventario sin recargar la pagina
+    const cargarProductos = async () => {
+        try {
+            const prods = await obtenerProductosAdmin();
+            if (Array.isArray(prods)) {
+                setProductos(prods);
+            }
+        } catch (error) {
+            console.error("Error al refrescar productos", error);
+        }
+    };
 
     // Portero de UI: solo decide qué se RENDERIZA. La autorización real
     // la aplica el backend en cada endpoint, validando la cookie httpOnly.
@@ -80,6 +96,19 @@ const Admin = () => {
         setFormData({ ...formData, [name]: type === 'file' ? files[0] : value });
     };
 
+    const handleSeleccionarEditar = (producto) => {
+        setProductoAEditar(producto.id_producto);
+        setFormData({
+            nombre: producto.nombre || '',
+            precio: producto.precio || '',
+            stock: producto.stock || '',
+            descripcion: producto.descripcion || '',
+            categoria: producto.categoria_id || producto.categoria_id_categoria || '',
+            imagen: null
+        });
+        window.scrollTo({ top: 0, behavior: 'smooth'});
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
@@ -93,12 +122,19 @@ const Admin = () => {
         if (formData.imagen) data.append('imagen', formData.imagen);
 
         try {
-            await agregarProducto(data);
-            alert('Producto guardado correctamente');
-            setFormData({ nombre: '', precio: '', stock: '', descripcion: '', categoria: '', imagen: null });
-            window.location.reload();
+            if (productoAEditar) {
+                await modificarProducto(productoAEditar, data);
+                alert('Producto actualizado correctamente');
+            } else {
+                await agregarProducto(data);
+                alert('Producto guardado correctamente');
+            }
+
+            setProductoAEditar(null);
+            setFormData(estadoInicialForm);
+            await cargarProductos();
         } catch (error) {
-            alert('Error al guardar el producto: ' + error.message);
+            alert('Error en la operación: ' + error.message);
         } finally {
             setLoading(false);
         }
@@ -115,6 +151,7 @@ const Admin = () => {
             }
         }
     };
+
 
     return (
         
@@ -246,7 +283,12 @@ const Admin = () => {
                                     <td>{producto.nombre_categoria}</td>
                                     <td>
                                         <div className="acciones-flex">
-                                            <button className="btn-accion btn-editar">Modificar</button>
+                                            <button
+                                            onClick={() => handleSeleccionarEditar(producto)}
+                                            className="btn-accion btn-editar"
+                                            >
+                                                Modificar
+                                            </button>
                                             <button
                                                 onClick={() => handleEliminar(producto.id_producto)}
                                                 className="btn-accion btn-eliminar"
