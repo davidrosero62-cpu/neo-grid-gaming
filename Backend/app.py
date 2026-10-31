@@ -18,6 +18,7 @@ from extensions import limiter
 from routes.auth_routes import auth_bp
 from routes.categorias_routes import categorias_bp
 from routes.productos_routes import productos_bp
+from routes.cart_routes import cart_bp
 
 
 # Inicialización del servidor Flask
@@ -60,7 +61,7 @@ app.config["MAX_CONTENT_LENGTH"] = 5 * 1024 * 1024  # 5 MB máximo
 app.register_blueprint(auth_bp)
 app.register_blueprint(categorias_bp)
 app.register_blueprint(productos_bp)
-
+app.register_blueprint(cart_bp, url_prefix='/api')
 
 if __name__ == "__main__":
     app.run(debug=True)

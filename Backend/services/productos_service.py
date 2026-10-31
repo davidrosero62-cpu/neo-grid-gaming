@@ -38,9 +38,6 @@ def obtener_productos_con_categoria():
         conexion.close()
 
 def obtener_producto_por_id(id_producto):
-    print("--- DEPURACIÓN OB TENER PRODUCTO ---")
-    print("Valor de id_producto:", id_producto, "Tipo:", type(id_producto))
-
     conexion = obtener_conexion()
     try:
         cursor = conexion.cursor(cursor_factory=RealDictCursor) 
