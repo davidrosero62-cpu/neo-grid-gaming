@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from "react";
-import { obtenerProductos, API_URL } from "../../services/api";
+import { obtenerProductos } from "../../services/api";
 
 /**
  * @component ProductGrid

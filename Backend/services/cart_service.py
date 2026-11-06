@@ -28,6 +28,6 @@ def agregar_producto_al_carrito (idusuario, id_producto, cantidad):
         nueva_cantidad = item['cantidad'] + cantidad
 
         if nueva_cantidad > producto['stock']:
-            raise ValueError("La cantidad todal supera el stock disponible")
+            raise ValueError("La cantidad total supera el stock disponible")
 
         actualizar_item_en_carrito(item['id_carrito'], nueva_cantidad)

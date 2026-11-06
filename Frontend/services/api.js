@@ -1,4 +1,4 @@
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
 /**
  * Traduce una Response de fetch a datos o lanza un error legible.
@@ -84,6 +84,16 @@ export async function modificarProducto(id, datosProducto) {
     body: datosProducto
   });
   return manejarRespuesta(response);
+}
+
+
+export async function obtener_usuario_actual() {
+  const response = await fetch(`${API_URL}/api/me`, {
+    method: "GET",
+    credentials: "include"
+  });
+  return manejarRespuesta(response);
+  
 }
 
 export { API_URL};

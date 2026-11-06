@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { logoutUsuario  } from "../../services/api";
+import { logoutUsuario, obtener_usuario_actual  } from "../../services/api";
 
 /**
  * @component Navbar
@@ -13,17 +13,29 @@ function Navbar() {
 
     const [fontSize, setFontSize] = useState(16);
     const [altoContraste, setAltoContraste] = useState(false);
-    const [usuarioRol, setUsuarioRol] = useState(sessionStorage.getItem("rol") || null);
+    const [usuarioRol, setUsuarioRol] = useState(null);
 
     useEffect(() =>{
         document.body.style.fontSize = `${fontSize}px`;
         document.body.classList.toggle('alto-contraste', altoContraste);
     }, [fontSize, altoContraste]);
 
+    // Verificar el estado real de la sesión contra la cookie HttpOnly.
     useEffect(() => {
-        setUsuarioRol(sessionStorage.getItem("rol"));
-    }, [location]);
+        obtener_usuario_actual()
+        .then(data => {
+            if(data.autenticado) {
+                setUsuarioRol(data.rol);
+                sessionStorage.setItem("rol", data.rol);
+            }
+        })
+        .catch(() => {
+            setUsuarioRol(null);
+            sessionStorage.removeItem("rol");
+        });
+    }), [location]
 
+    
     const handleLogout = async () => {
         try {
             await logoutUsuario(); // Invalida la cookie del lado del servidor

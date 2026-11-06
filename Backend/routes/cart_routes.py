@@ -29,7 +29,7 @@ def agregar_al_carrito_route():
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
 
-    # Error de producto no encontrado ebn la base de datos
+    # Error de producto no encontrado en la base de datos
     except KeyError as e:
         return jsonify({"error": "El producto especificado no existe"}), 404
 

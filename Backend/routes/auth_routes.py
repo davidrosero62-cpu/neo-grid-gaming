@@ -16,6 +16,7 @@ from psycopg2 import errorcodes
 from database import obtener_conexion
 from utils.cookies import set_cookie_token, ES_PRODUCCION
 from extensions import limiter  # <--- IMPORTANTE: Importamos el limiter
+from utils.auth_helpers import obtener_usuario_desde_token
 
 # Creación del Blueprint de Autenticación
 auth_bp = Blueprint('auth', __name__)
@@ -27,7 +28,7 @@ EMAIL_REGEX = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 @limiter.limit("5 per minute")
 def login():
 
-    """Ruta para inciar sesión y generar el token JWT """
+    """Ruta para iniciar sesión y generar el token JWT """
     data = request.json
     correo = data.get("correo")
     password = data.get("password")
@@ -45,7 +46,7 @@ def login():
 
         # Validación de la contraseña encriptada
         if usuario and check_password_hash(usuario["password"], password):
-            # Generacion de token JWT válido por 24 horas
+            # Generación de token JWT válido por 24 horas
             token = jwt.encode({
                 'idusuario': usuario['idusuario'],
                 'rol': usuario['rol'],
@@ -97,7 +98,7 @@ def register():
         return jsonify({"error": "El formato del correo no es valido"}), 400
 
     if len(password) < 8:
-        return jsonify({"error": "La contraseña debe contener almenos 8 caracteres."}), 400
+        return jsonify({"error": "La contraseña debe contener al menos 8 caracteres."}), 400
 
     conexion = None
     cursor = None
@@ -128,9 +129,26 @@ def register():
                 }), 201
             else:
                 print("Error inesperado en registro", err)
-                return jsonify({"error", "Ocurrió un error al procesar el registro"}), 500
+                return jsonify({"error": "Ocurrió un error al procesar el registro"}), 500
     finally:
         if cursor is not None:
             cursor.close()
         if conexion is not None:
             conexion.close()
+
+
+@auth_bp.route("/api/me", methods=["GET"])
+def obtener_usuario_actual():
+    """
+    Ruta para verificar la validez de la sesión actual leyendo la cookie HttpOnly.
+    Retorna los datos del usaurio si el token es válido o 401 si no hya sesión.
+    """
+    usuario = obtener_usuario_desde_token()
+    if not usuario:
+        return jsonify({"autenticado": False, "rol": None}), 401
+
+    return jsonify({
+        "autenticado": True,
+        "idusuario": usuario.get("idusuario"),
+        "rol": usuario.get("rol")
+    }), 200

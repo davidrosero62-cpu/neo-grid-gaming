@@ -28,8 +28,8 @@ function Footer () {
                 </div>
 
                 <div className="politicas">
-                    <h4>Políticas de Garanía y productos:</h4>
-                    <a href="https//www.neogridgaming.co/refund-policy" target="_blank" rel="noopener noreferre">https://www.neogridgaming.co/refund-policy</a>
+                    <h4>Políticas de Garantía y productos:</h4>
+                    <a href="https://www.neogridgaming.co/refund-policy" target="_blank" rel="noopener noreferre">https://www.neogridgaming.co/refund-policy</a>
                 </div>
 
                 <div className="politicas">

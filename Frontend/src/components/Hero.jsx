@@ -4,7 +4,7 @@ import React from 'react';
 /**
  * @component Hero
  * @description Renderiza el banner principal de impacto visual (Hero Section) de Neo Grid Gaming.
- * Porporciona un llamdo a la accior (CTA) mediante un boton con anclaje directo
+ * Porporciona un llamdo a la acción (CTA) mediante un botón con anclaje directo
  * hacia la seccion del catalogo de productos.
  */
 

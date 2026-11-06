@@ -64,3 +64,4 @@ def actualizar_item_en_carrito(id_carrito, nueva_cantidad):
         raise e
     finally:
         conexion.close()
+

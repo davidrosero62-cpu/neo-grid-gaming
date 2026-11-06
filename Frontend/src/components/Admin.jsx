@@ -1,19 +1,19 @@
 import React, {useEffect, useState} from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Alertas from "./Alertas";
-import { obtenerCategorias, obtenerProductosAdmin, agregarProducto, modificarProducto, eliminarProducto, API_URL } from "../../services/api";
+import { obtenerCategorias, obtenerProductosAdmin, agregarProducto, modificarProducto, eliminarProducto, API_URL, obtener_usuario_actual } from "../../services/api";
 
 
 /**
- * Componente de adminstracion (CRUD) para la gesion del invebtariio.
+ * Componente de adminstración (CRUD) para la gestión del inventario.
  * Permite agregar nuevos productos mediante un formulario multimedia
- * y visualizar, modificar o eliminar los productos xistentes nen una tabla.
+ * y visualizar, modificar o eliminar los productos existentes en una tabla.
  * *@component
  * *@typedef {Object} FormData
  * @property {string} nombre - Nombre comercial del producto.
  * @property {number|string} precio - Costo unitario del producto en COP.
  * @property {number|string} stock - Cantdad de unidades disponibles.
- * @property {string} descripcion - Detalles tecnicos y caaracteristicas.
+ * @property {string} descripcion - Detalles técnicos y caracteristicas.
  * @property {string} categoria - ID de la categoria seleccionada.
  * @property {file|null} imagen - Archivo binario de la imagen cargada.
  * *@typedef {object} Producto
@@ -44,7 +44,7 @@ const Admin = () => {
     };
 
     const [formData, setFormData] = useState(estadoInicialForm);
-    const [productoAEditar, setProductoAEditar = useState] = useState(null);
+    const [productoAEditar, setProductoAEditar] = useState(null);
     const [categorias, setCategorias] = useState([]);
     const [productos, setProductos] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -64,11 +64,17 @@ const Admin = () => {
     // Portero de UI: solo decide qué se RENDERIZA. La autorización real
     // la aplica el backend en cada endpoint, validando la cookie httpOnly.
     useEffect(() => {
-        const rolUsuario = sessionStorage.getItem("rol");
-        if (rolUsuario !== "admin") {
-            alert("No tienes permisos para acceder a esta sección.");
+        obtener_usuario_actual()
+        .then(data => {
+            if(!data.autenticado || data.rol !== "admin") {
+                alert("No tienes permisos para acceder a esta sección.");
+                navigate("/login");
+            }
+        })
+        .catch(() => {
+            alert("No tienes permisos para acceder a esta sección.")
             navigate("/login");
-        }
+        });
     }, [navigate]);
 
     useEffect(() => {
