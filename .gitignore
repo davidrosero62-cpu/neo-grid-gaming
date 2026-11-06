@@ -7,13 +7,17 @@
 **/.env.*
 
 # ==========================================
-# BACKEND (Python / Flask)
+# BACKEND (Python / Flask) - Globalizado
 # ==========================================
-Backend/__pycache__/
-Backend/*.pyc
-Backend/*.pyo
-Backend/venv/
-Backend/env/
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+env/
+ENV/
+
 
 # ==========================================
 # FRONTEND (React / Vite)
