@@ -27,18 +27,32 @@ app = Flask(__name__)
 
 
 # ------------------------------------------------------------------------------
-# CONFIGURACIÓN DE EXTENSIONES Y SEGURIDAD
+# CONFIGURACIÓN DE EXTENSIONES Y SEGURIDAD (CORS POR ENTORNO)
 # ------------------------------------------------------------------------------
-FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173")
+# Si la app corre en producción, solo autoriza el dominio oficial del Frontend.
+# En desarrollo local, autoriza tanto localhost como IP.
+if os.getenv("FLASK_ENV") == "production":
+    allowed_origins = [os.getenv("FRONTEND_URL", "")]
+else:
+    allowed_origins = [
+        "http://localhost:5173", 
+        "http://127.0.0.1:5173", 
+        "http://192.168.40.4:5173"
+    ]
+
 CORS(
     app, 
     supports_credentials=True, 
-    origins=[FRONTEND_URL], 
     resources={
         r"/*": {
-            "origins": FRONTEND_URL,
-            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
-            }})
+            "origins": allowed_origins,
+            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+            "allow_headers": ["Content-Type", "Authorization"]
+        }
+    }
+)
+
+
 # Asignar limitador de peticiones
 limiter.init_app(app)
 
