@@ -62,3 +62,24 @@ def test_route_agregar_producto_inexistente(client):
     assert response.status_code == 404
     json_data = response.get_json()
     assert "error" in json_data
+
+def test_route_obtener_carrito_exitoso(client):
+    """Verifica que GET /api/cart/<id_usuario> retorne 200 ok y la estructura esperada"""
+    response = client.get(f"/api/cart/{USER_ID_TEST}")
+
+    assert response.status_code == 200
+    data = response.get_json()
+
+    assert data["id_usuario"] == USER_ID_TEST
+    assert isinstance(data["items"], list)
+    assert "cantidad_total" in data
+    assert "total" in data
+
+def test_route_obtener_carrito_usuario_invalido(client):
+    """Verifica qie un ID de usuario igual a 0 restorne Bad Request"""
+    response = client.get("/api/cart/0")
+
+    assert response.status_code ==400
+    data = response.get_json()
+    assert "error" in data
+    

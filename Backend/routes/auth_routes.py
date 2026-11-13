@@ -141,7 +141,7 @@ def register():
 def obtener_usuario_actual():
     """
     Ruta para verificar la validez de la sesión actual leyendo la cookie HttpOnly.
-    Retorna los datos del usaurio si el token es válido o 401 si no hya sesión.
+    Retorna los datos del usaurio si el token es válido o 401 si no hay sesión.
     """
     usuario = obtener_usuario_desde_token()
     if not usuario:

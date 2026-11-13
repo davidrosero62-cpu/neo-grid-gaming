@@ -54,7 +54,7 @@ def actualizar_item_en_carrito(id_carrito, nueva_cantidad):
         SET cantidad = %s
         WHERE id_carrito = %s
         """,
-        (id_carrito, nueva_cantidad)
+        (nueva_cantidad, id_carrito)
         )
         conexion.commit()
         cursor.close()
@@ -65,3 +65,33 @@ def actualizar_item_en_carrito(id_carrito, nueva_cantidad):
     finally:
         conexion.close()
 
+def obtener_items_en_carrito (idusuario):
+    conexion = obtener_conexion()
+
+    try:
+        cursor = conexion.cursor(cursor_factory = RealDictCursor)
+        cursor.execute("""
+        SELECT
+            c.id_carrito,
+            c.id_usuario,
+            c.id_producto,
+            p.nombre,
+            p.precio,
+            p.imagen,
+            c.cantidad,
+            c.fecha_agregado
+        FROM carrito c
+        INNER JOIN producto p
+            ON c.id_producto = p.id_producto
+        WHERE c.id_usuario = %s
+        ORDER BY c.fecha_agregado DESC;
+        """, (idusuario,))
+        items = cursor.fetchall()
+        cursor.close()
+        return items
+    except Exception as e:
+        print(f"Error en la base de datos: {e}")
+        raise e
+    finally:
+        if conexion:
+            conexion.close()

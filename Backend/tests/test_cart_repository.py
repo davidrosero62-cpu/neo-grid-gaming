@@ -14,7 +14,8 @@ load_dotenv()
 from services.cart_repository import (
     buscar_item,
     insertar_en_carrito,
-    actualizar_item_en_carrito
+    actualizar_item_en_carrito,
+    obtener_items_en_carrito
 )
 
 
@@ -54,3 +55,19 @@ def test_actualizar_cantidad_item():
     # Verificar que la BD tenga exactamente el valor 5
     item_actualizado = buscar_item(USER_ID_TEST, PRODUCT_ID_TEST)
     assert item_actualizado['cantidad'] == 5
+
+def test_obtener_items_en_carrito():
+    """ Verifica que la consulta con INNER JOIN retorne los items con los datos del producto """
+    items = obtener_items_en_carrito (USER_ID_TEST)
+
+    assert isinstance(items, list)
+
+    # Validar la estructura del RealDictCursor (Si hay productos en carrito)
+    if len(items) > 0:
+        primer_item = items[0]
+        assert "id_carrito" in primer_item
+        assert "nombre" in primer_item
+        assert "precio" in primer_item
+        assert "imagen" in primer_item
+        assert "cantidad" in primer_item
+

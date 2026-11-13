@@ -4,7 +4,10 @@
 
 import os
 from flask import Blueprint, jsonify, request
-from services.cart_service import agregar_producto_al_carrito
+from services.cart_service import (
+    agregar_producto_al_carrito,
+    obtener_carrito_usuario
+)
 
 cart_bp = Blueprint('cart', __name__)
 
@@ -35,4 +38,16 @@ def agregar_al_carrito_route():
 
     # Errores no controlados de la base de datos
     except Exception as e:
+        return jsonify({"error": "Error interno del servidor"}), 500
+    
+
+@cart_bp.route('/cart/<int:id_usuario>', methods =['GET'])
+def obtener_carrito(id_usuario):
+    try:
+        carrito_usuario = obtener_carrito_usuario(id_usuario)
+        return jsonify(carrito_usuario), 200
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
+    except Exception as e:
+        print("Error del servidor:", e)
         return jsonify({"error": "Error interno del servidor"}), 500
