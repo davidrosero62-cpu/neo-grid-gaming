@@ -1,14 +1,25 @@
-#1. Trae un Sistema Linux minimalista con Python 3.11 ya instalado
-FROM python:3.11-slim
+#1. Trae un Sistema Linux minimalista con Python 3.12 ya instalado
+FROM python:3.12-slim
 
 #2. Crea y se posiciona dentro de una carpeta interna llamada /app
 WORKDIR /app
 
-#3. Copiar e instalar dependencias primero para aprovechar el caché de capas
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+#3. Instala dependencias necesarias para compilar librerías de C (psycopg2)
+RUN apt-get update && apt-get install -y \
+    gcc \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
 
-#5. Copia el resto del codigo del backend en el interior del contenedor.
+# 4. Instalar Poetry de manera global dentro del contenedor
+RUN pip install --no-cache-dir poetry
+
+# 5. Copiar los archivos de configuracion dentro del contenedor de poetry
+COPY pyproject.toml poetry.lock ./
+
+# 6. configurar Poetry para que no cree entornos virtuales internos e instale todo de golpe
+RUN poetry config virtualenvs.create false && poetry install --no-root --no-interaction
+
+#7. Copia el resto del codigo del backend en el interior del contenedor.
 COPY . .
 
 #6. Exponer el puerto donde escucha Flask
