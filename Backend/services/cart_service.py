@@ -3,7 +3,10 @@ from services.cart_repository import (
     buscar_item,
     insertar_en_carrito,
     actualizar_item_en_carrito,
-    obtener_items_en_carrito
+    obtener_items_en_carrito,
+    buscar_item_por_id_carrito,
+    eliminar_item_del_carrito,
+    vaciar_carrito_usuario,
 )
 
 # Validar cantidad, que sea mayor a cero
@@ -67,3 +70,45 @@ def obtener_carrito_usuario(id_usuario):
         "cantidad_total": cantidad_total,
         "total": round(total_carrito, 2)
         }
+
+def actualizar_cantidad_en_carrito(id_carrito, nueva_cantidad):
+    if not id_carrito or id_carrito <= 0:
+        raise ValueError ("El ID del carrito no es válido")
+    if not nueva_cantidad or nueva_cantidad <= 0:
+        raise ValueError ("La cantidad debe ser mayor a 0")
+
+    item = buscar_item_por_id_carrito(id_carrito)
+    if item is None:
+        raise ValueError("El ítem no existe en el carrito")
+
+    if nueva_cantidad > item["stock"]:
+        raise ValueError(f"Stock insuficiente, stock disponible: {item['stock']}")
+
+    actualizar_item_en_carrito(id_carrito, nueva_cantidad)
+
+    return {
+        "mensaje" : "producto actualizado con éxito",
+        "id_carrito" : id_carrito,
+        "nueva_cantidad" : nueva_cantidad 
+        
+    }
+
+def eliminar_producto_carrito(id_carrito):
+    if not id_carrito or id_carrito <= 0:
+        raise ValueError("El ID del carrito no es válido")
+    eliminado = eliminar_item_del_carrito(id_carrito)
+    if not eliminado:
+        raise ValueError("Producto no encontrado en el carrito")
+    return {
+        "mensaje" : "Producto eliminado exitosamente",
+        "id_carrito" : id_carrito
+    }
+
+def vaciar_carrito(id_usuario):
+    if not id_usuario or id_usuario <= 0:
+        raise ValueError("El ID de usuario es inválido")
+    cantidad_eliminada = vaciar_carrito_usuario(id_usuario)
+    return {
+        "mensaje" : "Carrito vaciado con éxito",
+        "cantidad_eliminada" : cantidad_eliminada
+    }

@@ -95,3 +95,69 @@ def obtener_items_en_carrito (idusuario):
     finally:
         if conexion:
             conexion.close()
+
+def buscar_item_por_id_carrito (id_carrito):
+    conexion = obtener_conexion()
+    try:
+        cursor = conexion.cursor(cursor_factory = RealDictCursor)
+        cursor.execute("""
+        SELECT
+            c.id_carrito, 
+            c.id_usuario,
+            c.id_producto,
+            c.cantidad,
+            p.stock
+        FROM carrito c
+        INNER JOIN producto p
+            ON c.id_producto = p.id_producto
+        WHERE c.id_carrito = %s
+        """, (id_carrito,))
+        item = cursor.fetchone()
+        cursor.close()
+        return item
+    except Exception as e:
+        print(f"Error en la base de datos: {e}")
+        raise e
+    finally:
+        if conexion:
+            conexion.close()
+
+def eliminar_item_del_carrito(id_carrito):
+    conexion = obtener_conexion()
+    try:
+        cursor = conexion.cursor()
+        cursor.execute("""
+        DELETE FROM carrito
+        WHERE id_carrito = %s
+        """, (id_carrito,))
+        filas_eliminadas = cursor.rowcount
+        conexion.commit()
+        cursor.close()
+        return filas_eliminadas > 0
+    except Exception as e:
+        conexion.rollback()
+        print(f"Error en la base de datos {e}")
+        raise e
+    finally:
+        if conexion:
+            conexion.close()
+
+def vaciar_carrito_usuario(id_usuario):
+    conexion = obtener_conexion()
+    try:
+        cursor = conexion.cursor()
+        cursor.execute("""
+        DELETE FROM carrito
+        WHERE id_usuario = %s
+        """, (id_usuario,))
+        filas_eliminadas = cursor.rowcount
+        conexion.commit()
+        cursor.close()
+        return filas_eliminadas
+    except Exception as e:
+        conexion.rollback()
+        print(f"Error en la base de datos {e}")
+        raise e
+    finally:
+        if conexion:
+            conexion.close()

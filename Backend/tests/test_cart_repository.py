@@ -15,7 +15,10 @@ from services.cart_repository import (
     buscar_item,
     insertar_en_carrito,
     actualizar_item_en_carrito,
-    obtener_items_en_carrito
+    obtener_items_en_carrito,
+    buscar_item_por_id_carrito,
+    eliminar_item_del_carrito,
+    vaciar_carrito_usuario
 )
 
 
@@ -71,3 +74,38 @@ def test_obtener_items_en_carrito():
         assert "imagen" in primer_item
         assert "cantidad" in primer_item
 
+def test_buscar_item_por_id_carrito():
+    items = obtener_items_en_carrito(USER_ID_TEST)
+
+    if not items:
+        insertar_en_carrito(USER_ID_TEST, PRODUCT_ID_TEST, 1)
+        items = obtener_items_en_carrito(USER_ID_TEST)
+
+    id_carrito_real = items[0]["id_carrito"]
+
+    item = buscar_item_por_id_carrito(id_carrito_real)
+
+    assert item is not None
+    assert item["id_carrito"] == id_carrito_real
+    assert "stock" in item
+
+    assert buscar_item_por_id_carrito(99999) is None
+
+def test_eliminar_item_del_carrito():
+    items = obtener_items_en_carrito(USER_ID_TEST)
+
+    if not items:
+        insertar_en_carrito(USER_ID_TEST, PRODUCT_ID_TEST, 1)
+        items = obtener_items_en_carrito(USER_ID_TEST)
+
+    id_a_borrar = items[0]["id_carrito"]
+    assert eliminar_item_del_carrito(id_a_borrar) is True
+    assert eliminar_item_del_carrito(id_a_borrar) is False
+
+def test_vaciar_carrito_usuario():
+    insertar_en_carrito(USER_ID_TEST, PRODUCT_ID_TEST, 1)
+
+    eliminados = vaciar_carrito_usuario(USER_ID_TEST)
+
+    assert eliminados >= 1
+    assert obtener_items_en_carrito(USER_ID_TEST) == []
