@@ -71,7 +71,7 @@ def obtener_carrito_usuario(id_usuario):
         "total": round(total_carrito, 2)
         }
 
-def actualizar_cantidad_en_carrito(id_carrito, nueva_cantidad):
+def actualizar_cantidad_en_carrito(id_carrito, nueva_cantidad, id_usuario):
     if not id_carrito or id_carrito <= 0:
         raise ValueError ("El ID del carrito no es válido")
     if not nueva_cantidad or nueva_cantidad <= 0:
@@ -84,6 +84,9 @@ def actualizar_cantidad_en_carrito(id_carrito, nueva_cantidad):
     if nueva_cantidad > item["stock"]:
         raise ValueError(f"Stock insuficiente, stock disponible: {item['stock']}")
 
+    if item["id_usuario"] != id_usuario:
+        raise PermissionError("No tienes permiso para modificar este ítem del carrito")
+
     actualizar_item_en_carrito(id_carrito, nueva_cantidad)
 
     return {
@@ -93,9 +96,14 @@ def actualizar_cantidad_en_carrito(id_carrito, nueva_cantidad):
         
     }
 
-def eliminar_producto_carrito(id_carrito):
+def eliminar_producto_carrito(id_carrito, id_usuario):
     if not id_carrito or id_carrito <= 0:
         raise ValueError("El ID del carrito no es válido")
+    item = buscar_item_por_id_carrito(id_carrito)
+    if item is None:
+        raise ValueError("Producto no encotrado en el carrito")
+    if item["id_usuario"] != id_usuario:
+        raise PermissionError("No tienes permiso para eliminar este item del carrito")
     eliminado = eliminar_item_del_carrito(id_carrito)
     if not eliminado:
         raise ValueError("Producto no encontrado en el carrito")

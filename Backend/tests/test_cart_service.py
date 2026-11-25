@@ -89,15 +89,15 @@ def test_obtener_carrito_vacio():
 def test_actualizar_cantidad_invalida():
     #Verifica que se lance error si la cantidad es invalida
     with pytest.raises(ValueError) as exc_info:
-        actualizar_cantidad_en_carrito(1, 0)
+        actualizar_cantidad_en_carrito(1, 0, USER_ID_TEST)
 
     with pytest.raises(ValueError) as exc_info:
-        actualizar_cantidad_en_carrito(1, -3)
+        actualizar_cantidad_en_carrito(1, -3, USER_ID_TEST)
 
 def test_actualizar_item_inexistente():
     #Verifica que lance el error si el ID de usuario es invalido
     with pytest.raises(ValueError) as exc_info:
-        actualizar_cantidad_en_carrito(9999, 2)
+        actualizar_cantidad_en_carrito(9999, 2, USER_ID_TEST)
 
 def test_actualizar_superando_el_stock():
     #Comprueba que se ejecute correctamente la verificación de stock existente en la base de datos
@@ -108,7 +108,7 @@ def test_actualizar_superando_el_stock():
     id_carrito_real = items[0]["id_carrito"]
 
     with pytest.raises(ValueError) as exc_info:
-        actualizar_cantidad_en_carrito(id_carrito_real, 99999)
+        actualizar_cantidad_en_carrito(id_carrito_real, 99999, USER_ID_TEST)
 
 def test_actualizar_cantidad_exitosa():
     # Comprueba la respuesta si todo es correcto
@@ -118,7 +118,7 @@ def test_actualizar_cantidad_exitosa():
     items = obtener_items_en_carrito(USER_ID_TEST)
     id_carrito_real = items[0]["id_carrito"]
 
-    resultado = actualizar_cantidad_en_carrito(id_carrito_real, 2)
+    resultado = actualizar_cantidad_en_carrito(id_carrito_real, 2, USER_ID_TEST)
 
     assert "mensaje" in resultado
     assert resultado["id_carrito"] == id_carrito_real
@@ -126,10 +126,10 @@ def test_actualizar_cantidad_exitosa():
 
 def test_eliminar_producto_invalido_o_inexistente():
     with pytest.raises(ValueError) as exec_info:
-        eliminar_producto_carrito(0)
+        eliminar_producto_carrito(0, USER_ID_TEST)
 
     with pytest.raises(ValueError) as exec_info:
-        eliminar_producto_carrito(99999)
+        eliminar_producto_carrito(99999, USER_ID_TEST)
 
 def test_eliminar_producto_exitoso():
     item =obtener_items_en_carrito(USER_ID_TEST)
@@ -137,7 +137,7 @@ def test_eliminar_producto_exitoso():
         insertar_en_carrito(USER_ID_TEST, PRODUCT_ID_TEST, 1)
     item = obtener_items_en_carrito(USER_ID_TEST)
     id_a_borrar = item[0]["id_carrito"]
-    resultado = eliminar_producto_carrito(id_a_borrar)
+    resultado = eliminar_producto_carrito(id_a_borrar, USER_ID_TEST)
 
     assert "mensaje" in resultado
     assert resultado["id_carrito"] == id_a_borrar
@@ -153,3 +153,23 @@ def test_vaciar_carrito_exitoso():
     assert "mensaje" in resultado
     assert resultado["cantidad_eliminada"] >= 1
     assert obtener_items_en_carrito(USER_ID_TEST) == []
+
+def test_actualizar_item_de_otro_usuario():
+    item = obtener_items_en_carrito(USER_ID_TEST)
+    if not item:
+        insertar_en_carrito(USER_ID_TEST,PRODUCT_ID_TEST, 1)
+    item = obtener_items_en_carrito(USER_ID_TEST)
+    id_carrito_real = item[0]["id_carrito"]
+
+    with pytest.raises(PermissionError):
+        actualizar_cantidad_en_carrito(id_carrito_real, 2, 9999)
+
+def test_borrar_producto_de_otro_usuario():
+    item = obtener_items_en_carrito(USER_ID_TEST)
+    if not item:
+        insertar_en_carrito(USER_ID_TEST, PRODUCT_ID_TEST, 1)
+    item = obtener_items_en_carrito(USER_ID_TEST)
+    id_carrito_real = item[0]["id_carrito"]
+
+    with pytest.raises(PermissionError):
+        eliminar_producto_carrito(id_carrito_real, 9999)
