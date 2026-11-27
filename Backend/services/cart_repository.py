@@ -44,7 +44,7 @@ def insertar_en_carrito(idusuario, id_producto, cantidad):
         conexion.close()
 
 
-def actualizar_item_en_carrito(id_carrito, nueva_cantidad):
+def actualizar_item_en_carrito(id_carrito, nueva_cantidad, id_usuario):
     conexion = obtener_conexion()
 
     try:
@@ -53,15 +53,17 @@ def actualizar_item_en_carrito(id_carrito, nueva_cantidad):
         UPDATE carrito
         SET cantidad = %s
         WHERE id_carrito = %s
+        AND id_usuario = %s
         """,
-        (nueva_cantidad, id_carrito)
+        (nueva_cantidad, id_carrito, id_usuario)
         )
+        filas_afectadas = cursor.rowcount
         conexion.commit()
         cursor.close()
-    except Exception as e:
+        return filas_afectadas > 0
+    except Exception:
         conexion.rollback()
-        print(f"Error en la base de datos: {e}")
-        raise e
+        raise
     finally:
         conexion.close()
 

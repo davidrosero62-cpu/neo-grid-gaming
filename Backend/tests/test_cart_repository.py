@@ -53,7 +53,7 @@ def test_actualizar_cantidad_item():
 
 
     # Actualizar a una nueva cantidad conocida
-    actualizar_item_en_carrito(id_carrito, nueva_cantidad=5)
+    actualizar_item_en_carrito(id_carrito, 5, USER_ID_TEST)
 
     # Verificar que la BD tenga exactamente el valor 5
     item_actualizado = buscar_item(USER_ID_TEST, PRODUCT_ID_TEST)

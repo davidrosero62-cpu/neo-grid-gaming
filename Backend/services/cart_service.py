@@ -11,6 +11,8 @@ from services.cart_repository import (
 
 # Validar cantidad, que sea mayor a cero
 def agregar_producto_al_carrito (idusuario, id_producto, cantidad):
+    if not isinstance(cantidad, int) or isinstance(cantidad, bool):
+        raise ValueError("la cantidad debe ser un entero.")
     if cantidad <= 0:
         raise ValueError("La cantidad debe ser mayor a 0.")
 #  Buscar producto y validar que exista
@@ -34,7 +36,7 @@ def agregar_producto_al_carrito (idusuario, id_producto, cantidad):
         if nueva_cantidad > producto['stock']:
             raise ValueError("La cantidad total supera el stock disponible")
 
-        actualizar_item_en_carrito(item['id_carrito'], nueva_cantidad)
+        actualizar_item_en_carrito(item['id_carrito'], nueva_cantidad, idusuario)
 
 def obtener_carrito_usuario(id_usuario):
     if not id_usuario or id_usuario <= 0:
@@ -74,21 +76,23 @@ def obtener_carrito_usuario(id_usuario):
 def actualizar_cantidad_en_carrito(id_carrito, nueva_cantidad, id_usuario):
     if not id_carrito or id_carrito <= 0:
         raise ValueError ("El ID del carrito no es válido")
-    if not nueva_cantidad or nueva_cantidad <= 0:
-        raise ValueError ("La cantidad debe ser mayor a 0")
+    if isinstance(nueva_cantidad, bool) or not isinstance(nueva_cantidad, int) or nueva_cantidad <= 0:
+        raise ValueError("La cantidad debe ser un entero mayor a 0")
 
     item = buscar_item_por_id_carrito(id_carrito)
     if item is None:
         raise ValueError("El ítem no existe en el carrito")
+    
+    if item["id_usuario"] != id_usuario:
+        raise PermissionError("No tienes permiso para modificar este ítem del carrito")
 
     if nueva_cantidad > item["stock"]:
         raise ValueError(f"Stock insuficiente, stock disponible: {item['stock']}")
 
-    if item["id_usuario"] != id_usuario:
-        raise PermissionError("No tienes permiso para modificar este ítem del carrito")
-
-    actualizar_item_en_carrito(id_carrito, nueva_cantidad)
-
+    actualizado = actualizar_item_en_carrito(id_carrito, nueva_cantidad, id_usuario)
+    if not actualizado:
+        raise ValueError("No se pudo actualizar el articulo del carrito")
+    
     return {
         "mensaje" : "producto actualizado con éxito",
         "id_carrito" : id_carrito,
