@@ -64,6 +64,7 @@ h3 {
   width: 100%;
   padding: 0 24px;
   background-color: var(--bg-dark);
+  border-bottom: 1px solid #006e09;
 }
 
 .logo {

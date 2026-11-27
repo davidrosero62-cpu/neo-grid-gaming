@@ -1,5 +1,6 @@
-import React, {useState, useEffect} from "react";
-import { obtenerProductos } from "../../services/api";
+import React, {useState, useEffect, use} from "react";
+import { obtenerProductos, agregarAlCarrito, API_URL } from "../../services/api";
+import {useNavigate} from 'react-router-dom';
 
 /**
  * @component ProductGrid
@@ -11,9 +12,9 @@ import { obtenerProductos } from "../../services/api";
 function ProductGrid () {
     // Memoria interna para guardar la lista de productos.
     const [productos, setProductos] = useState([]);
+    // Estado para evitar dobles clics
+    const [agregandoId, setagregandoId] = useState(null);
 
-    // Obtenemos la URL base desde las variables de entorno de Vite o usamos localhost por defecto
-    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
     // Efecto para cargar los productos automaticamente al montar el componente.
     useEffect(() => {
@@ -21,6 +22,27 @@ function ProductGrid () {
         .then(data => setProductos(data))
         .catch(error => console.error(error));
     }, []);
+
+    const handleAgregarCarrito = async (id_producto) => {
+        setagregandoId(id_producto);
+        try{
+            await agregarAlCarrito({ id_producto, cantidad: 1});
+            window.dispatchEvent(new Event("carritoActualizado"));
+            alert("Producto agregado al carrito");
+        } catch (error) {
+            if (error.message.includes("No autenticado") || error.message.includes("inciar sesión")) {
+                navigate("/login", {
+                    state: {mensajeExito: "Inicia sesión para agregar productos al carrito"}
+                });
+            } else {
+                alert(error.message);
+            }
+        } finally {
+            setagregandoId(null);
+        }
+    };
+
+
 
     return (
         <section id="catalogo" className="contenedor-productos">
@@ -46,7 +68,8 @@ function ProductGrid () {
                                 <button
                                     type="button"
                                     className="btn-agregar-carrito"
-                                    onClick={() => console.log(`Producto ${producto.id_producto} agregado`)}
+                                    disabled={agregandoId === producto.id_producto}
+                                    onClick={() => handleAgregarCarrito(producto.id_producto)}
                                     >
                                     Agregar al Carrito
                                 </button>

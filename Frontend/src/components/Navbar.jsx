@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { logoutUsuario, obtener_usuario_actual  } from "../../services/api";
+import { logoutUsuario, obtener_usuario_actual, obtenerCarrito  } from "../../services/api";
+
 
 /**
  * @component Navbar
@@ -11,9 +12,11 @@ function Navbar() {
     const navigate = useNavigate();
     const location = useLocation();
 
+
     const [fontSize, setFontSize] = useState(16);
     const [altoContraste, setAltoContraste] = useState(false);
     const [usuarioRol, setUsuarioRol] = useState(null);
+    const [cantidadCarrito, setCantidadCarrito] = useState(0);
 
     useEffect(() =>{
         document.body.style.fontSize = `${fontSize}px`;
@@ -22,18 +25,24 @@ function Navbar() {
 
     // Verificar el estado real de la sesión contra la cookie HttpOnly.
     useEffect(() => {
-        obtener_usuario_actual()
+    obtener_usuario_actual()
         .then(data => {
-            if(data.autenticado) {
+            if (data.autenticado) {
                 setUsuarioRol(data.rol);
                 sessionStorage.setItem("rol", data.rol);
+                actualizarContadorCarrito();
+            } else {
+                setUsuarioRol(null);
+                setCantidadCarrito(0);
+                sessionStorage.removeItem("rol");
             }
         })
         .catch(() => {
             setUsuarioRol(null);
+            setCantidadCarrito(0);
             sessionStorage.removeItem("rol");
         });
-    }), [location]
+    }, [location]);
 
     
     const handleLogout = async () => {
@@ -44,9 +53,26 @@ function Navbar() {
         } finally {
             sessionStorage.removeItem("rol");
             setUsuarioRol(null);
+            setCantidadCarrito(0)
             navigate("/login", {state: {mensajeExito: "Sesión cerrada correctamente"} });
         }
-};
+    };
+
+    const actualizarContadorCarrito = async () => {
+        try {
+            const data = await obtenerCarrito();
+            setCantidadCarrito(data.cantidad_total || 0);
+        } catch {
+            setCantidadCarrito(0);
+        }
+    };
+
+    useEffect(() => {
+        window.addEventListener("carritoActualizado", actualizarContadorCarrito);
+        return () => {
+            window.removeEventListener("carritoActualizado", actualizarContadorCarrito);
+        };
+    }, []);
 
 
 
@@ -70,10 +96,10 @@ function Navbar() {
 
         <div className="nav-actions">
             <div className="cart">
-                <Link to="/carrito" id="cart-icon">
+                <Link to="/cart" id="cart-icon">
                     <i className="fas fa-shopping-cart"></i>
                 </Link>
-                <span id="cart-count">0</span>
+                <span id="cart-count">{cantidadCarrito}</span>
             </div>
 
             <div className="login-container">

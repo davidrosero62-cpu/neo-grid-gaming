@@ -96,4 +96,50 @@ export async function obtener_usuario_actual() {
   
 }
 
+/**Rutas Carrito */
+
+export async function agregarAlCarrito({id_producto, cantidad = 1}= {} ) {
+  const response = await fetch (`${API_URL}/api/cart/add`, {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    credentials: "include",
+    body: JSON.stringify({ id_producto, cantidad })
+  });
+  return manejarRespuesta(response);
+}
+
+export async function obtenerCarrito() {
+  const response = await fetch (`${API_URL}/api/cart`,{
+    credentials: "include"
+  });
+  return manejarRespuesta(response)
+  
+}
+
+export async function actualizarCantidadCarrito({id_carrito, cantidad}= {}) {
+  const response = await fetch (`${API_URL}/api/cart/update/${id_carrito}`,{
+    method: "PUT",
+    headers: {"Content-Type": "application/json"},
+    credentials: "include",
+    body: JSON.stringify({cantidad})
+  });
+  return manejarRespuesta(response)
+}
+
 export { API_URL};
+
+export async function eliminarItemCarrito({id_carrito} = {}) {
+  const response = await fetch(`${API_URL}/api/cart/remove/${id_carrito}`,{
+    method: "DELETE",
+    credentials: "include"
+  });
+  return manejarRespuesta(response)
+}
+
+export async function vaciarCarrito() {
+  const response = await fetch (`${API_URL}/api/cart/clear`, {
+    method: "DELETE",
+    credentials: "include"
+  });
+  return manejarRespuesta(response)
+}

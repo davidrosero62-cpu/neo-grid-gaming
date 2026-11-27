@@ -6,6 +6,7 @@ import Footer from "./components/Footer";
 import Login from "./components/Login";
 import Register from "./components/Register";
 import Admin from "./components/Admin";
+import Carrito from "./components/carrito";
 
 function App() {
     return (
@@ -24,6 +25,9 @@ function App() {
                 {/* Rutas para la autenticación */}
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
+
+                {/* Ruta para el carrito */}
+                <Route path="/cart" element={<Carrito />} />
             </Routes>
 
             {/* 3. Componentes globales que se ven en todas las páginas (abajo) */}
